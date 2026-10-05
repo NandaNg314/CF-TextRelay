@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Cloudflare Wrangler local state & private configuration
+.wrangler/
+wrangler.toml
+
+# Build output
+dist/
+
+# Logs & Temp
+*.log
+.DS_Store
+Thumbs.db
+temp-*
+*.sqlite

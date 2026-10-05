@@ -1,0 +1,11 @@
+name = "cf-text-relay"
+main = "src/index.js"
+compatibility_date = "2024-03-20"
+
+[vars]
+AUTH_PASSWORD = "your_secure_password" # 访问密码，请自行修改
+
+[[d1_databases]]
+binding = "DB"
+database_name = "info-db"
+database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # 运行 npx wrangler d1 create info-db 后填入生成的 ID
