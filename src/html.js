@@ -557,6 +557,12 @@ export function renderHTML() {
       border: 1px solid rgba(6, 182, 212, 0.25);
     }
 
+    .msg-tag.file-tag {
+      background: rgba(56, 189, 248, 0.15);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
     .msg-actions {
       display: flex;
       align-items: center;
@@ -1397,31 +1403,51 @@ export function renderHTML() {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
 
-    // Handle Pending Image Selection
-    function setPendingImage(file) {
-      if (!file || !file.type.startsWith('image/')) {
-        showToast('所选文件非支持的图片格式', 'error');
-        return;
-      }
+    // Handle Pending Attachment (Image or Document File)
+    function setPendingAttachment(file) {
+      if (!file) return;
 
-      STATE.pendingImage = file;
-      pendingImageName.textContent = file.name || 'image.png';
+      const isImg = file.type && file.type.startsWith('image/');
+      STATE.pendingAttachment = file;
+      pendingImageName.textContent = file.name || (isImg ? 'image.png' : 'file');
       pendingImageSize.textContent = formatBytes(file.size);
 
-      const previewUrl = URL.createObjectURL(file);
-      pendingImageThumb.src = previewUrl;
+      if (isImg) {
+        const previewUrl = URL.createObjectURL(file);
+        pendingImageThumb.src = previewUrl;
+        pendingImageThumb.style.display = 'block';
+        showToast('已载入图片，可输入说明或直接点击发送', 'info');
+      } else {
+        // Document / Code / Text File
+        pendingImageThumb.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="%2338bdf8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+        pendingImageThumb.style.display = 'block';
+        showToast(\`已载入原文件 \${file.name}，发送后支持原文件名下载\`, 'info');
+
+        // 文本格式文件自动读取预览到输入框中
+        const isTextLike = (file.type && file.type.startsWith('text/')) || /\\.(txt|md|json|js|ts|py|html|css|sql|log|csv|xml|yaml|yml)$/i.test(file.name);
+        if (isTextLike && file.size <= 2 * 1024 * 1024) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const text = e.target.result;
+            composerInput.value = (composerInput.value ? composerInput.value + '\\n\\n' : '') + text;
+            composerInput.dispatchEvent(new Event('input'));
+          };
+          reader.readAsText(file, 'utf-8');
+        }
+      }
+
       pendingImageContainer.style.display = 'flex';
-      showToast('已载入图片，可输入说明或直接点击发送', 'info');
     }
 
-    function clearPendingImage() {
-      STATE.pendingImage = null;
+    function clearPendingAttachment() {
+      STATE.pendingAttachment = null;
       imageUploadInput.value = '';
+      fileUploadInput.value = '';
       pendingImageThumb.src = '';
       pendingImageContainer.style.display = 'none';
     }
 
-    btnRemovePendingImage.addEventListener('click', clearPendingImage);
+    btnRemovePendingImage.addEventListener('click', clearPendingAttachment);
 
     // Trigger Image Input (Camera & Photo Gallery)
     btnUploadImage.addEventListener('click', () => {
@@ -1431,7 +1457,7 @@ export function renderHTML() {
 
     imageUploadInput.addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0];
-      if (file) setPendingImage(file);
+      if (file) setPendingAttachment(file);
     });
 
     // Paste from clipboard helper (Supports image and text)
@@ -1585,7 +1611,7 @@ export function renderHTML() {
 
     fileUploadInput.addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0];
-      if (file) handleTxtFile(file);
+      if (file) setPendingAttachment(file);
     });
 
     // Intercept Global Paste for Instant Image Upload on Windows
@@ -1598,7 +1624,7 @@ export function renderHTML() {
           e.preventDefault();
           const file = item.getAsFile();
           if (file) {
-            setPendingImage(file);
+            setPendingAttachment(file);
             showToast('已捕获剪贴板图片，点击发送即可同步！', 'success');
             return;
           }
@@ -1628,12 +1654,7 @@ export function renderHTML() {
         const dt = e.dataTransfer;
         const files = dt.files;
         if (files && files.length > 0) {
-          const file = files[0];
-          if (file.type && file.type.startsWith('image/')) {
-            setPendingImage(file);
-          } else {
-            handleTxtFile(file);
-          }
+          setPendingAttachment(files[0]);
         }
       });
     }
@@ -1854,12 +1875,12 @@ export function renderHTML() {
       fetchMessages(false);
     });
 
-    // Send Message (Text or Image)
+    // Send Message (Text, Image, or File)
     async function sendMessage() {
       const content = composerInput.value.trim();
-      const hasImage = !!STATE.pendingImage;
+      const hasAttachment = !!STATE.pendingAttachment;
 
-      if (!content && !hasImage) return;
+      if (!content && !hasAttachment) return;
       if (STATE.isSubmitting) return;
 
       STATE.isSubmitting = true;
@@ -1867,16 +1888,17 @@ export function renderHTML() {
       btnSend.style.opacity = '0.7';
 
       try {
-        if (hasImage) {
+        if (hasAttachment) {
           // Send FormData with file
           const formData = new FormData();
-          formData.append('file', STATE.pendingImage);
+          formData.append('file', STATE.pendingAttachment);
           if (content) {
             formData.append('content', content);
           }
           await apiRequest('/api/messages', 'POST', formData, true);
-          showToast('图片已同步流转', 'success');
-          clearPendingImage();
+          const isImg = STATE.pendingAttachment.type && STATE.pendingAttachment.type.startsWith('image/');
+          showToast(isImg ? '图片已同步流转' : ('原文件 ' + STATE.pendingAttachment.name + ' 已同步流转'), 'success');
+          clearPendingAttachment();
         } else {
           // Send plain text
           await apiRequest('/api/messages', 'POST', { content });
@@ -1990,9 +2012,17 @@ export function renderHTML() {
       streamFeed.innerHTML = filtered.map(msg => {
         const isSelected = STATE.selectedIds.has(msg.id);
         const isImage = msg.type === 'image' || (msg.content && msg.content.startsWith('data:image/'));
+        const isFile = !isImage && (msg.type === 'file' || msg.file_key);
         const imageUrl = isImage ? getMessageImageUrl(msg) : '';
-        const tagText = isImage ? \`🖼️ 图片 \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\` : \`\${(msg.content || '').length} 字\`;
-        const fileName = msg.file_name || (isImage ? 'image.png' : 'text.txt');
+        const fileUrl = isFile && msg.file_key ? ('/api/files/' + encodeURIComponent(msg.file_key) + '?token=' + encodeURIComponent(STATE.token) + '&download=' + encodeURIComponent(msg.file_name || 'download')) : '';
+
+        let tagText = \`\${(msg.content || '').length} 字\`;
+        if (isImage) {
+          tagText = \`🖼️ 图片 \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\`;
+        } else if (isFile) {
+          tagText = \`📄 \${msg.file_name || '原文件'} \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\`;
+        }
+        const fileName = msg.file_name || (isImage ? 'image.png' : 'file.txt');
 
         return \`
           <div class="msg-card glass \${isSelected ? 'selected' : ''}" data-id="\${msg.id}">
@@ -2002,7 +2032,7 @@ export function renderHTML() {
                   <input type="checkbox" class="msg-checkbox item-select-cb" data-id="\${msg.id}" \${isSelected ? 'checked' : ''}>
                 \` : ''}
                 <span class="msg-time" title="\${new Date(msg.created_at).toLocaleString()}">\${formatTime(msg.created_at)}</span>
-                <span class="msg-tag \${isImage ? 'image-tag' : ''}">\${tagText}</span>
+                <span class="msg-tag \${isImage ? 'image-tag' : (isFile ? 'file-tag' : '')}">\${tagText}</span>
               </div>
               <div class="msg-actions">
                 \${isImage ? \`
@@ -2014,6 +2044,21 @@ export function renderHTML() {
                     <span>复制图片</span>
                   </button>
                   <button class="btn btn-icon btn-download-image-card" data-img="\${encodeURIComponent(imageUrl)}" data-name="\${encodeURIComponent(fileName)}" style="width: 28px; height: 28px; padding: 5px;" title="下载原图">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  </button>
+                \` : (isFile ? \`
+                  <button class="btn btn-copy-card btn-copy-text-card" data-copy="\${encodeURIComponent(msg.content || '')}" title="复制文本内容">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                    <span>复制</span>
+                  </button>
+                  <button class="btn btn-icon btn-download-file-card" data-url="\${encodeURIComponent(fileUrl)}" data-name="\${encodeURIComponent(fileName)}" style="width: 28px; height: 28px; padding: 5px;" title="下载原始文件 (\${fileName})">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/>
@@ -2035,7 +2080,7 @@ export function renderHTML() {
                       <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
                   </button>
-                \`}
+                \`)}
                 <button class="btn btn-danger btn-icon btn-single-delete" data-id="\${msg.id}" style="width: 28px; height: 28px; padding: 5px;" title="删除这条记录">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6"/>
@@ -2122,6 +2167,22 @@ export function renderHTML() {
           const imgUrl = decodeURIComponent(btn.getAttribute('data-img'));
           const name = decodeURIComponent(btn.getAttribute('data-name'));
           downloadImageFile(imgUrl, name);
+        });
+      });
+
+      // Download single raw document / code file (MD, TXT, JSON, etc.)
+      document.querySelectorAll('.btn-download-file-card').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const fileUrl = decodeURIComponent(btn.getAttribute('data-url'));
+          const name = decodeURIComponent(btn.getAttribute('data-name'));
+          const a = document.createElement('a');
+          a.href = fileUrl;
+          a.download = name;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          showToast('已开始下载 ' + name, 'success');
         });
       });
 

@@ -246,6 +246,12 @@ export default {
         headers.set('Cache-Control', 'private, max-age=604800, immutable');
         headers.set('Access-Control-Allow-Origin', '*');
 
+        const downloadName = url.searchParams.get('download');
+        if (downloadName) {
+          const encodedName = encodeURIComponent(downloadName);
+          headers.set('Content-Disposition', `attachment; filename="${encodedName}"; filename*=UTF-8''${encodedName}`);
+        }
+
         return new Response(object.body, { headers });
       } catch (err) {
         return jsonResponse({ success: false, error: err.message }, 500);
@@ -319,7 +325,8 @@ export default {
                 // 上传到 Cloudflare R2
                 const extMatch = file.name.match(/\.([a-zA-Z0-9]+)$/);
                 const ext = extMatch ? extMatch[1].toLowerCase() : (isImage ? 'png' : 'bin');
-                fileKey = `images/${createdAt}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+                const folder = isImage ? 'images' : 'files';
+                fileKey = `${folder}/${createdAt}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
                 await bucket.put(fileKey, file.stream(), {
                   httpMetadata: { contentType: mimeType }
                 });
