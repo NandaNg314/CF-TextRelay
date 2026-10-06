@@ -108,10 +108,11 @@ export default {
     // PWA Manifest
     if (path === '/manifest.json') {
       const manifest = {
+        id: '/?v=2',
         name: 'CF-TextRelay',
         short_name: 'CF-TextRelay',
         description: '极速、优雅的个人跨端文本与图片剪贴板中转站',
-        start_url: '/',
+        start_url: '/?v=2',
         scope: '/',
         display: 'standalone',
         background_color: '#07090e',
