@@ -119,6 +119,12 @@ export default {
         theme_color: '#07090e',
         icons: [
           {
+            src: '/apple-touch-icon.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
             src: '/icon.svg',
             sizes: '192x192 512x512',
             type: 'image/svg+xml',
@@ -137,7 +143,7 @@ export default {
     // PWA Service Worker (Auto-bust cache on version upgrade)
     if (path === '/sw.js') {
       const swCode = `
-        const SW_VERSION = 'v2.2.0-img-sync';
+        const SW_VERSION = 'v2.3.0-cross-platform-sync';
         self.addEventListener('install', (e) => {
           self.skipWaiting();
         });
@@ -156,6 +162,23 @@ export default {
           'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
           'Pragma': 'no-cache',
           'Expires': '0',
+        },
+      });
+    }
+
+    // Apple Touch Icon PNG (Native 192x192 PNG for iOS & Safari Home Screen PWA)
+    if (path === '/apple-touch-icon.png') {
+      const base64Data = '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';
+      const binaryStr = atob(base64Data);
+      const len = binaryStr.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryStr.charCodeAt(i);
+      }
+      return new Response(bytes, {
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=604800',
         },
       });
     }

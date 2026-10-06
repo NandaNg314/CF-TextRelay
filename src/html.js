@@ -7,8 +7,9 @@ export function renderHTML() {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>CF-TextRelay · 个人跨端文本与图片中转</title>
   <link rel="manifest" href="/manifest.json?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="/icon.svg">
-  <link rel="apple-touch-icon" href="/icon.svg">
+  <link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png">
   <meta name="theme-color" content="#07090e">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1542,41 +1543,69 @@ export function renderHTML() {
       }
     }
 
-    // Copy Image to Windows Clipboard (Converts to image/png for universal Ctrl+V paste)
+    // Convert Image URL to PNG Blob via Canvas for max cross-platform clipboard compatibility
+    async function fetchImageAsPngBlob(imageUrl) {
+      const res = await fetch(imageUrl);
+      if (!res.ok) throw new Error('获取图片数据失败: ' + res.status);
+      const blob = await res.blob();
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob((b) => {
+            if (b) resolve(b);
+            else reject(new Error('转换图片格式失败'));
+          }, 'image/png');
+        };
+        img.onerror = () => reject(new Error('加载图片源数据失败'));
+        img.src = URL.createObjectURL(blob);
+      });
+    }
+
+    // Copy Image to System Clipboard (Universal: Windows, macOS, iOS, Android)
     async function copyImageToClipboard(imageUrl) {
       try {
         showToast('正在转换并复制图片...', 'info');
-        const res = await fetch(imageUrl);
-        const blob = await res.blob();
 
-        // Convert blob to PNG Blob via Canvas for max Windows clipboard compatibility
-        const pngBlob = await new Promise((resolve, reject) => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            canvas.toBlob((b) => {
-              if (b) resolve(b);
-              else reject(new Error('转换图片格式失败'));
-            }, 'image/png');
-          };
-          img.onerror = () => reject(new Error('加载图片源数据失败'));
-          img.src = URL.createObjectURL(blob);
-        });
+        const isMac = /Macintosh|Mac OS X/i.test(navigator.userAgent);
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const pasteShortcut = isMac ? 'Cmd+V (⌘V)' : (isMobile ? '长按粘贴' : 'Ctrl+V');
 
-        await navigator.clipboard.write([
-          new ClipboardItem({ 'image/png': pngBlob })
-        ]);
+        if (!navigator.clipboard || !navigator.clipboard.write || typeof ClipboardItem === 'undefined') {
+          throw new Error('当前浏览器环境不支持图片写入剪贴板API');
+        }
 
-        showToast('图片已复制到剪贴板！可直接在微信/QQ等按 Ctrl+V 粘贴', 'success');
+        const pngPromise = fetchImageAsPngBlob(imageUrl);
+
+        // Safari (iOS & macOS) & Modern Chromium: Passing Promise directly keeps user gesture alive
+        let writePromise;
+        try {
+          const item = new ClipboardItem({ 'image/png': pngPromise });
+          writePromise = navigator.clipboard.write([item]);
+        } catch (itemErr) {
+          // Fallback for older Chromium engines requiring resolved Blob in constructor
+          const resolvedBlob = await pngPromise;
+          const item = new ClipboardItem({ 'image/png': resolvedBlob });
+          writePromise = navigator.clipboard.write([item]);
+        }
+
+        await writePromise;
+
+        showToast(\`图片已复制到剪贴板！可直接按 \${pasteShortcut} 粘贴\`, 'success');
         return true;
       } catch (err) {
         console.error('Copy image error:', err);
-        showToast('复制图片失败，请检查浏览器剪贴板权限或使用下载保存', 'error');
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          showToast('手机剪贴板写权限受限：可点击图片打开大图，长按直接拷贝或存储', 'info');
+        } else {
+          showToast('复制图片失败，请检查浏览器剪贴板权限或使用下载保存', 'error');
+        }
         return false;
       }
     }
@@ -2043,7 +2072,7 @@ export function renderHTML() {
               </div>
               <div class="msg-actions">
                 \${isImage ? \`
-                  <button class="btn btn-copy-card btn-copy-image-card" data-img="\${encodeURIComponent(imageUrl)}" title="复制图片到系统剪贴板 (可在微信/QQ直接粘贴)">
+                  <button class="btn btn-copy-card btn-copy-image-card" data-img="\${encodeURIComponent(imageUrl)}" title="复制图片到系统剪贴板 (Win: Ctrl+V / Mac: ⌘+V / 微信/QQ等直接粘贴)">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -2259,15 +2288,24 @@ export function renderHTML() {
     function fallbackCopy(text) {
       const textarea = document.createElement('textarea');
       textarea.value = text;
+      textarea.setAttribute('readonly', '');
       textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '0';
       textarea.style.opacity = '0';
       document.body.appendChild(textarea);
+      textarea.focus();
       textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
       try {
-        document.execCommand('copy');
-        showToast('已复制到剪贴板', 'success');
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showToast('已复制到剪贴板', 'success');
+        } else {
+          throw new Error('execCommand returned false');
+        }
       } catch (e) {
-        showToast('复制失败，请手动选择复制', 'error');
+        showToast('复制失败，请手动长按选择复制', 'error');
       }
       document.body.removeChild(textarea);
     }
