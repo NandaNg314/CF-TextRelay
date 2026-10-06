@@ -1,11 +1,11 @@
-// Liquid Glass UI for CF Info Worker
+// Liquid Glass UI for CF Info Worker with Full Image & Text Sync Support
 export function renderHTML() {
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>TextRelay · 个人跨端文本中转</title>
+  <title>CF-TextRelay · 个人跨端文本与图片中转</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/svg+xml" href="/icon.svg">
   <link rel="apple-touch-icon" href="/icon.svg">
@@ -13,7 +13,7 @@ export function renderHTML() {
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="TextRelay">
+  <meta name="apple-mobile-web-app-title" content="CF-TextRelay">
   <style>
     :root {
       --bg: #07090e;
@@ -298,22 +298,13 @@ export function renderHTML() {
 
     .composer-card.dragover {
       border-color: #38bdf8 !important;
-      background: rgba(56, 189, 248, 0.12) !important;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
-    }
-
-    .composer-card:focus-within {
-      border-color: rgba(99, 102, 241, 0.5);
-      box-shadow: 
-        0 16px 36px -10px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(99, 102, 241, 0.3),
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+      background: rgba(56, 189, 248, 0.08) !important;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
     }
 
     .composer-input {
       width: 100%;
-      min-height: 88px;
-      max-height: 360px;
+      min-height: 84px;
       background: transparent;
       border: none;
       outline: none;
@@ -321,21 +312,73 @@ export function renderHTML() {
       font-family: inherit;
       font-size: 15px;
       line-height: 1.6;
-      resize: vertical;
+      resize: none;
+      scrollbar-width: thin;
     }
 
     .composer-input::placeholder {
-      color: rgba(148, 163, 184, 0.6);
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    /* Pending Image Card in Composer */
+    .pending-image-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: var(--radius-md);
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .pending-image-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .pending-image-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .pending-image-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .pending-image-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f8fafc;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pending-image-size {
+      font-size: 11px;
+      color: #94a3b8;
     }
 
     .composer-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
       padding-top: 10px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
     }
 
     .composer-info {
@@ -347,24 +390,18 @@ export function renderHTML() {
     }
 
     .shortcut-hint {
-      display: none;
+      display: inline-flex;
       align-items: center;
       gap: 4px;
     }
 
-    @media (min-width: 640px) {
-      .shortcut-hint {
-        display: inline-flex;
-      }
-    }
-
     .kbd {
       padding: 2px 6px;
+      border-radius: 5px;
       background: rgba(255, 255, 255, 0.08);
-      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
       font-family: var(--mono);
-      font-size: 11px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 10px;
     }
 
     .composer-btns {
@@ -374,28 +411,38 @@ export function renderHTML() {
       margin-left: auto;
     }
 
-    /* Filter & Controls Bar */
+    /* Controls Bar */
     .controls-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
       gap: 12px;
-      padding: 0 4px;
+      padding: 4px 2px;
     }
 
     .search-box {
-      position: relative;
       flex: 1;
       max-width: 320px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      width: 15px;
+      height: 15px;
+      color: var(--text-muted);
+      pointer-events: none;
     }
 
     .search-input {
       width: 100%;
-      padding: 8px 12px 8px 34px;
+      padding: 8px 12px 8px 36px;
+      border-radius: var(--radius-sm);
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--card-border);
-      border-radius: var(--radius-sm);
       color: var(--text-main);
       font-size: 13px;
       outline: none;
@@ -403,19 +450,9 @@ export function renderHTML() {
     }
 
     .search-input:focus {
+      border-color: var(--accent);
       background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(99, 102, 241, 0.4);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      pointer-events: none;
-      width: 15px;
-      height: 15px;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
     }
 
     .toolbar-actions {
@@ -424,23 +461,28 @@ export function renderHTML() {
       gap: 8px;
     }
 
-    /* Message Stream List */
+    /* Stream Feed */
     .stream-feed {
       display: flex;
       flex-direction: column;
       gap: 14px;
-      min-height: 160px;
+      width: 100%;
     }
 
-    /* Message Card */
     .msg-card {
-      border-radius: var(--radius-md);
-      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 12px;
+      transition: transform 0.2s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
       position: relative;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .msg-card:hover {
@@ -509,6 +551,12 @@ export function renderHTML() {
       color: var(--text-muted);
     }
 
+    .msg-tag.image-tag {
+      background: rgba(6, 182, 212, 0.15);
+      color: #67e8f9;
+      border: 1px solid rgba(6, 182, 212, 0.25);
+    }
+
     .msg-actions {
       display: flex;
       align-items: center;
@@ -543,6 +591,56 @@ export function renderHTML() {
       white-space: pre-wrap;
       word-break: break-word;
       user-select: text;
+    }
+
+    /* Image Display in Message Card */
+    .msg-image-wrap {
+      margin-top: 4px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: zoom-in;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      max-width: 100%;
+    }
+
+    .msg-image-wrap:hover {
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+    }
+
+    .msg-image-img {
+      max-width: 100%;
+      max-height: 480px;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: var(--radius-md);
+      transition: transform 0.3s;
+    }
+
+    .msg-image-wrap:hover .msg-image-img {
+      transform: scale(1.015);
+    }
+
+    .msg-image-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #e2e8f0;
+      pointer-events: none;
     }
 
     .msg-url-chip {
@@ -599,24 +697,92 @@ export function renderHTML() {
       gap: 8px;
     }
 
-    /* Modals */
+    /* Fullscreen Image Lightbox */
+    .lightbox-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(7, 9, 14, 0.88);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .lightbox-overlay.active {
+      display: flex;
+    }
+
+    .lightbox-container {
+      max-width: 96vw;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.18);
+    }
+
+    .lightbox-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .lightbox-close-btn {
+      position: absolute;
+      top: -44px;
+      right: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lightbox-close-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    /* Modal Dialogs */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.65);
+      z-index: 200;
+      background: rgba(7, 9, 14, 0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      z-index: 1000;
       display: none;
-      place-content: center;
+      align-items: center;
+      justify-content: center;
       padding: 20px;
-      opacity: 0;
-      transition: opacity 0.25s ease;
     }
 
     .modal-overlay.active {
-      display: grid;
-      opacity: 1;
+      display: flex;
     }
 
     .modal-card {
@@ -627,98 +793,98 @@ export function renderHTML() {
       display: flex;
       flex-direction: column;
       gap: 18px;
-      transform: scale(0.95);
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .modal-overlay.active .modal-card {
-      transform: scale(1);
+    @keyframes modalPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
     .modal-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
-      color: #fff;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     .modal-desc {
-      font-size: 13.5px;
+      font-size: 13px;
       color: var(--text-muted);
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     .modal-options-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .time-option-btn {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       padding: 12px 16px;
       border-radius: var(--radius-md);
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--card-border);
       color: var(--text-main);
-      font-size: 14px;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       cursor: pointer;
-      transition: all 0.18s;
-      text-align: left;
+      transition: all 0.2s;
     }
 
     .time-option-btn:hover {
-      background: rgba(239, 68, 68, 0.12);
-      border-color: rgba(239, 68, 68, 0.35);
-      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      transform: translateX(3px);
     }
 
-    .time-option-btn .badge-danger {
+    .badge-danger {
+      padding: 2px 8px;
       font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 4px;
+      border-radius: 9999px;
       background: rgba(239, 68, 68, 0.2);
-      color: #f87171;
+      color: #fca5a5;
     }
 
     /* Auth Screen */
     .auth-overlay {
       position: fixed;
       inset: 0;
-      background: var(--bg);
-      z-index: 2000;
+      z-index: 500;
       display: grid;
-      place-content: center;
+      place-items: center;
       padding: 20px;
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      background: rgba(7, 9, 14, 0.85);
     }
 
     .auth-card {
       width: 100%;
-      max-width: 380px;
+      max-width: 360px;
       border-radius: var(--radius-lg);
-      padding: 32px 28px;
+      padding: 36px 28px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 20px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
     }
 
     .auth-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 20px;
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
       background: var(--accent-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
-      box-shadow: 0 10px 30px var(--accent-glow);
+      box-shadow: 0 8px 25px var(--accent-glow);
+      font-size: 26px;
     }
 
     .auth-input-group {
@@ -730,25 +896,25 @@ export function renderHTML() {
 
     .auth-input {
       width: 100%;
-      padding: 12px 16px;
+      padding: 13px 16px;
       border-radius: var(--radius-md);
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--card-border);
-      color: #fff;
+      color: var(--text-main);
       font-size: 15px;
-      outline: none;
       text-align: center;
-      letter-spacing: 2px;
+      outline: none;
       transition: all 0.2s;
+      letter-spacing: 2px;
     }
 
     .auth-input:focus {
-      background: rgba(255, 255, 255, 0.1);
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px var(--accent-glow);
+      box-shadow: 0 0 16px var(--accent-glow);
+      background: rgba(255, 255, 255, 0.1);
     }
 
-    .auth-card.shake {
+    .shake {
       animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     }
 
@@ -765,10 +931,11 @@ export function renderHTML() {
       top: 24px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 3000;
+      z-index: 1000;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      gap: 10px;
       pointer-events: none;
     }
 
@@ -777,16 +944,14 @@ export function renderHTML() {
       border-radius: 9999px;
       font-size: 13.5px;
       font-weight: 500;
-      color: #fff;
+      color: #ffffff;
       display: flex;
       align-items: center;
       gap: 8px;
-      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .toast.hide {
-      animation: toastOut 0.25s forwards ease;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+      max-width: 90vw;
     }
 
     @keyframes toastIn {
@@ -794,9 +959,10 @@ export function renderHTML() {
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    @keyframes toastOut {
-      from { opacity: 1; transform: translateY(0) scale(1); }
-      to { opacity: 0; transform: translateY(-16px) scale(0.9); }
+    .toast.hide {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.92);
+      transition: all 0.25s;
     }
 
     /* Empty state */
@@ -834,6 +1000,26 @@ export function renderHTML() {
         min-height: 76px;
         font-size: 14px;
       }
+      .composer-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .composer-info {
+        justify-content: space-between;
+      }
+      .composer-btns {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1.25fr;
+        gap: 6px;
+        width: 100%;
+        margin-left: 0;
+      }
+      .composer-btns .btn {
+        padding: 8px 4px;
+        font-size: 12.5px;
+        white-space: nowrap;
+      }
       .controls-bar {
         flex-direction: column;
         align-items: stretch;
@@ -859,12 +1045,42 @@ export function renderHTML() {
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- Fullscreen Image Lightbox Modal -->
+  <div class="lightbox-overlay" id="imageLightbox">
+    <div class="lightbox-container" id="lightboxContainer">
+      <button class="lightbox-close-btn" id="btnCloseLightbox" title="关闭预览">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <img src="" alt="大图预览" class="lightbox-img" id="lightboxImg">
+      <div class="lightbox-toolbar">
+        <button class="btn btn-primary" id="btnLightboxCopy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span id="lightboxCopyText">复制图片到剪贴板</span>
+        </button>
+        <button class="btn" id="btnLightboxDownload">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          保存原图
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Auth Screen (Visible when not logged in) -->
   <div class="auth-overlay" id="authScreen" style="display: none;">
     <div class="auth-card glass">
       <div class="auth-icon">💧</div>
       <div>
-        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">TextRelay 文本中转站</h2>
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">CF-TextRelay</h2>
         <p style="font-size: 13px; color: var(--text-muted);">请输入专属访问密码解锁</p>
       </div>
       <div class="auth-input-group">
@@ -883,7 +1099,7 @@ export function renderHTML() {
       <div class="brand">
         <div class="brand-icon">💧</div>
         <div class="brand-title">
-          <h1>TextRelay</h1>
+          <h1>CF-TextRelay</h1>
           <div class="brand-status">
             <span class="status-dot" id="statusDot"></span>
             <span id="statusText">多端同步已就绪</span>
@@ -920,7 +1136,25 @@ export function renderHTML() {
 
     <!-- Composer Section -->
     <div class="composer-card glass">
-      <textarea id="composerInput" class="composer-input" placeholder="在此粘贴或输入需要跨端流转的文本... (支持快捷复制 / 快捷发送)"></textarea>
+      <!-- Pending Image Preview Bar -->
+      <div id="pendingImageContainer" class="pending-image-container" style="display: none;">
+        <div class="pending-image-info">
+          <img id="pendingImageThumb" src="" alt="待发送图片" class="pending-image-thumb">
+          <div class="pending-image-meta">
+            <span id="pendingImageName" class="pending-image-name">image.png</span>
+            <span id="pendingImageSize" class="pending-image-size">0 KB</span>
+          </div>
+        </div>
+        <button class="btn btn-icon btn-danger" id="btnRemovePendingImage" title="移除图片" style="width: 32px; height: 32px; padding: 4px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <textarea id="composerInput" class="composer-input" placeholder="输入或粘贴文本，支持复制/拖拽图片直接发送..."></textarea>
+      
       <div class="composer-footer">
         <div class="composer-info">
           <span id="charCount">0 字符</span>
@@ -929,22 +1163,40 @@ export function renderHTML() {
           </span>
         </div>
         <div class="composer-btns">
+          <!-- Hidden File Inputs -->
           <input type="file" id="fileUploadInput" accept="text/plain, text/*, .txt, .md, .log, .json, .csv, .js, .py, .html, .css, .sql, .xml, .yaml, .yml, application/json" style="display: none;">
+          <input type="file" id="imageUploadInput" accept="image/*" style="display: none;">
+
+          <!-- Upload Image (Photo / Album) Button -->
+          <button class="btn btn-accent" id="btnUploadImage" title="发送图片 (支持拍照或相册选取)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            图片
+          </button>
+
+          <!-- Upload TXT Button -->
           <button class="btn" id="btnUploadTxt" title="上传 TXT / 文本文件">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="17 8 12 3 7 8"/>
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
-            上传 TXT
+            TXT
           </button>
-          <button class="btn" id="btnPasteClipboard" title="从剪贴板粘贴">
+
+          <!-- Paste Clipboard Button -->
+          <button class="btn" id="btnPasteClipboard" title="从剪贴板粘贴文本或图片">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
             </svg>
             粘贴
           </button>
+
+          <!-- Send Button -->
           <button class="btn btn-primary" id="btnSend">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="22" y1="2" x2="11" y2="13"/>
@@ -963,7 +1215,7 @@ export function renderHTML() {
           <circle cx="11" cy="11" r="8"/>
           <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" id="searchInput" class="search-input" placeholder="搜索文本记录...">
+        <input type="text" id="searchInput" class="search-input" placeholder="搜索文本或输入 [图片]...">
       </div>
       <div class="toolbar-actions">
         <button class="btn" id="btnToggleSelectMode">
@@ -1016,7 +1268,7 @@ export function renderHTML() {
         按时段批量清理
       </div>
       <p class="modal-desc">
-        选择要删除的时间范围。此操作将为所有终端永久删除指定信息，请谨慎操作。
+        选择要删除的时间范围。此操作将同时永久清理指定时段内的文本及 R2 图片，请谨慎操作。
       </p>
 
       <div class="modal-options-list">
@@ -1037,7 +1289,7 @@ export function renderHTML() {
           <span class="badge-danger">1 Year</span>
         </button>
         <button class="time-option-btn" data-range="all" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
-          <span style="color: #f87171; font-weight: 600;">清空全部信息 (一键重置)</span>
+          <span style="color: #f87171; font-weight: 600;">清空全部记录与文件 (一键重置)</span>
           <span class="badge-danger" style="background: rgba(239, 68, 68, 0.35);">CLEAR ALL</span>
         </button>
       </div>
@@ -1057,7 +1309,9 @@ export function renderHTML() {
       selectMode: false,
       searchQuery: '',
       pollingInterval: null,
-      isSubmitting: false
+      isSubmitting: false,
+      pendingImage: null, // File object for image upload
+      currentLightboxImage: null
     };
 
     // DOM Elements
@@ -1083,7 +1337,14 @@ export function renderHTML() {
     const btnBatchDelete = document.getElementById('btnBatchDelete');
     const btnBatchExportTxt = document.getElementById('btnBatchExportTxt');
     const btnUploadTxt = document.getElementById('btnUploadTxt');
+    const btnUploadImage = document.getElementById('btnUploadImage');
     const fileUploadInput = document.getElementById('fileUploadInput');
+    const imageUploadInput = document.getElementById('imageUploadInput');
+    const pendingImageContainer = document.getElementById('pendingImageContainer');
+    const pendingImageThumb = document.getElementById('pendingImageThumb');
+    const pendingImageName = document.getElementById('pendingImageName');
+    const pendingImageSize = document.getElementById('pendingImageSize');
+    const btnRemovePendingImage = document.getElementById('btnRemovePendingImage');
     const composerCard = document.querySelector('.composer-card');
     const btnInstallApp = document.getElementById('btnInstallApp');
     const btnTimeDeleteModal = document.getElementById('btnTimeDeleteModal');
@@ -1091,6 +1352,14 @@ export function renderHTML() {
     const btnCloseTimeModal = document.getElementById('btnCloseTimeModal');
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
+
+    // Lightbox DOM
+    const imageLightbox = document.getElementById('imageLightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const btnCloseLightbox = document.getElementById('btnCloseLightbox');
+    const btnLightboxCopy = document.getElementById('btnLightboxCopy');
+    const btnLightboxDownload = document.getElementById('btnLightboxDownload');
+    const lightboxCopyText = document.getElementById('lightboxCopyText');
 
     // Toast helper
     function showToast(text, type = 'info') {
@@ -1109,7 +1378,7 @@ export function renderHTML() {
       setTimeout(() => {
         toast.classList.add('hide');
         setTimeout(() => toast.remove(), 250);
-      }, 2200);
+      }, 2400);
     }
 
     // Auto-expanding textarea
@@ -1119,23 +1388,92 @@ export function renderHTML() {
       charCount.textContent = \`\${composerInput.value.length} 字符\`;
     });
 
-    // Paste from clipboard helper
+    // Format bytes
+    function formatBytes(bytes) {
+      if (!bytes || bytes <= 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    // Handle Pending Image Selection
+    function setPendingImage(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        showToast('所选文件非支持的图片格式', 'error');
+        return;
+      }
+
+      STATE.pendingImage = file;
+      pendingImageName.textContent = file.name || 'image.png';
+      pendingImageSize.textContent = formatBytes(file.size);
+
+      const previewUrl = URL.createObjectURL(file);
+      pendingImageThumb.src = previewUrl;
+      pendingImageContainer.style.display = 'flex';
+      showToast('已载入图片，可输入说明或直接点击发送', 'info');
+    }
+
+    function clearPendingImage() {
+      STATE.pendingImage = null;
+      imageUploadInput.value = '';
+      pendingImageThumb.src = '';
+      pendingImageContainer.style.display = 'none';
+    }
+
+    btnRemovePendingImage.addEventListener('click', clearPendingImage);
+
+    // Trigger Image Input (Camera & Photo Gallery)
+    btnUploadImage.addEventListener('click', () => {
+      imageUploadInput.value = '';
+      imageUploadInput.click();
+    });
+
+    imageUploadInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) setPendingImage(file);
+    });
+
+    // Paste from clipboard helper (Supports image and text)
     btnPasteClipboard.addEventListener('click', async () => {
       try {
-        if (!navigator.clipboard || !navigator.clipboard.readText) {
-          showToast('当前浏览器不支持直接读取剪贴板，请手动 Ctrl+V', 'error');
+        if (!navigator.clipboard) {
+          showToast('当前浏览器不支持读取剪贴板，请手动 Ctrl+V', 'error');
           return;
         }
-        const text = await navigator.clipboard.readText();
-        if (text) {
-          composerInput.value = (composerInput.value ? composerInput.value + '\\n' : '') + text;
-          composerInput.dispatchEvent(new Event('input'));
-          showToast('已从剪贴板粘贴', 'success');
-        } else {
-          showToast('剪贴板为空', 'info');
+
+        // Try reading image from clipboard first
+        if (navigator.clipboard.read) {
+          try {
+            const items = await navigator.clipboard.read();
+            for (const item of items) {
+              const imageType = item.types.find(t => t.startsWith('image/'));
+              if (imageType) {
+                const blob = await item.getType(imageType);
+                const file = new File([blob], \`clipboard-\${Date.now()}.png\`, { type: imageType });
+                setPendingImage(file);
+                showToast('已从剪贴板读取到图片', 'success');
+                return;
+              }
+            }
+          } catch (_) {
+            // fallback to readText
+          }
+        }
+
+        // Fallback to text reading
+        if (navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            composerInput.value = (composerInput.value ? composerInput.value + '\\n' : '') + text;
+            composerInput.dispatchEvent(new Event('input'));
+            showToast('已从剪贴板粘贴文本', 'success');
+          } else {
+            showToast('剪贴板为空', 'info');
+          }
         }
       } catch (err) {
-        showToast('读取剪贴板失败，请允许剪贴板权限或手动粘贴', 'error');
+        showToast('读取剪贴板失败，请允许权限或直接在页面按 Ctrl+V', 'error');
       }
     });
 
@@ -1153,14 +1491,78 @@ export function renderHTML() {
       showToast('已开始下载 ' + filename, 'success');
     }
 
+    // Helper to download image as file
+    async function downloadImageFile(imageUrl, filename) {
+      try {
+        showToast('正在准备下载...', 'info');
+        const res = await fetch(imageUrl);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || \`image-\${Date.now()}.png\`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('下载已开始: ' + (filename || '图片'), 'success');
+      } catch (err) {
+        // Direct link fallback
+        const a = document.createElement('a');
+        a.href = imageUrl;
+        a.download = filename || 'image.png';
+        a.target = '_blank';
+        a.click();
+      }
+    }
+
+    // Copy Image to Windows Clipboard (Converts to image/png for universal Ctrl+V paste)
+    async function copyImageToClipboard(imageUrl) {
+      try {
+        showToast('正在转换并复制图片...', 'info');
+        const res = await fetch(imageUrl);
+        const blob = await res.blob();
+
+        // Convert blob to PNG Blob via Canvas for max Windows clipboard compatibility
+        const pngBlob = await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob((b) => {
+              if (b) resolve(b);
+              else reject(new Error('转换图片格式失败'));
+            }, 'image/png');
+          };
+          img.onerror = () => reject(new Error('加载图片源数据失败'));
+          img.src = URL.createObjectURL(blob);
+        });
+
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': pngBlob })
+        ]);
+
+        showToast('图片已复制到剪贴板！可直接在微信/QQ等按 Ctrl+V 粘贴', 'success');
+        return true;
+      } catch (err) {
+        console.error('Copy image error:', err);
+        showToast('复制图片失败，请检查浏览器剪贴板权限或使用下载保存', 'error');
+        return false;
+      }
+    }
+
     // Upload TXT / text file helper
     function handleTxtFile(file) {
       if (file.size > 2 * 1024 * 1024) {
-        showToast('文件过大，支持不超过 2MB 的纯文本文件', 'error');
+        showToast('文本文件过大，支持不超过 2MB 的文本', 'error');
         return;
       }
       if (file.type && file.type.startsWith('image/')) {
-        showToast('当前选择的是图片，请在文件列表中选择 .txt 文本文件', 'error');
+        setPendingImage(file);
         return;
       }
       const reader = new FileReader();
@@ -1186,6 +1588,24 @@ export function renderHTML() {
       if (file) handleTxtFile(file);
     });
 
+    // Intercept Global Paste for Instant Image Upload on Windows
+    window.addEventListener('paste', (e) => {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+
+      for (const item of items) {
+        if (item.type && item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) {
+            setPendingImage(file);
+            showToast('已捕获剪贴板图片，点击发送即可同步！', 'success');
+            return;
+          }
+        }
+      }
+    });
+
     // Drag and drop file to composer
     if (composerCard) {
       ['dragenter', 'dragover'].forEach(eventName => {
@@ -1208,28 +1628,77 @@ export function renderHTML() {
         const dt = e.dataTransfer;
         const files = dt.files;
         if (files && files.length > 0) {
-          handleTxtFile(files[0]);
+          const file = files[0];
+          if (file.type && file.type.startsWith('image/')) {
+            setPendingImage(file);
+          } else {
+            handleTxtFile(file);
+          }
         }
       });
     }
 
+    // Lightbox Controls
+    function openLightbox(imageUrl, filename) {
+      STATE.currentLightboxImage = { url: imageUrl, filename };
+      lightboxImg.src = imageUrl;
+      imageLightbox.classList.add('active');
+      lightboxCopyText.textContent = '复制图片到剪贴板';
+      btnLightboxCopy.classList.remove('copied');
+    }
+
+    function closeLightbox() {
+      imageLightbox.classList.remove('active');
+      lightboxImg.src = '';
+      STATE.currentLightboxImage = null;
+    }
+
+    btnCloseLightbox.addEventListener('click', closeLightbox);
+    imageLightbox.addEventListener('click', (e) => {
+      if (e.target === imageLightbox) closeLightbox();
+    });
+
+    btnLightboxCopy.addEventListener('click', async () => {
+      if (!STATE.currentLightboxImage) return;
+      const ok = await copyImageToClipboard(STATE.currentLightboxImage.url);
+      if (ok) {
+        lightboxCopyText.textContent = '已复制图片!';
+        btnLightboxCopy.classList.add('copied');
+        setTimeout(() => {
+          lightboxCopyText.textContent = '复制图片到剪贴板';
+          btnLightboxCopy.classList.remove('copied');
+        }, 2000);
+      }
+    });
+
+    btnLightboxDownload.addEventListener('click', () => {
+      if (!STATE.currentLightboxImage) return;
+      downloadImageFile(STATE.currentLightboxImage.url, STATE.currentLightboxImage.filename);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && imageLightbox.classList.contains('active')) {
+        closeLightbox();
+      }
+    });
+
     // API Helper with Auth
-    async function apiRequest(endpoint, method = 'GET', body = null) {
-      const headers = {
-        'Content-Type': 'application/json'
-      };
+    async function apiRequest(endpoint, method = 'GET', body = null, isFormData = false) {
+      const headers = {};
       if (STATE.token) {
         headers['Authorization'] = 'Bearer ' + STATE.token;
+      }
+      if (!isFormData && body) {
+        headers['Content-Type'] = 'application/json';
       }
 
       const res = await fetch(endpoint, {
         method,
         headers,
-        body: body ? JSON.stringify(body) : null
+        body: isFormData ? body : (body ? JSON.stringify(body) : null)
       });
 
       if (res.status === 401) {
-        // Unauthorized
         logout();
         throw new Error('未授权或密码错误');
       }
@@ -1385,21 +1854,38 @@ export function renderHTML() {
       fetchMessages(false);
     });
 
-    // Send Message
+    // Send Message (Text or Image)
     async function sendMessage() {
       const content = composerInput.value.trim();
-      if (!content || STATE.isSubmitting) return;
+      const hasImage = !!STATE.pendingImage;
+
+      if (!content && !hasImage) return;
+      if (STATE.isSubmitting) return;
 
       STATE.isSubmitting = true;
       btnSend.disabled = true;
       btnSend.style.opacity = '0.7';
 
       try {
-        const data = await apiRequest('/api/messages', 'POST', { content });
+        if (hasImage) {
+          // Send FormData with file
+          const formData = new FormData();
+          formData.append('file', STATE.pendingImage);
+          if (content) {
+            formData.append('content', content);
+          }
+          await apiRequest('/api/messages', 'POST', formData, true);
+          showToast('图片已同步流转', 'success');
+          clearPendingImage();
+        } else {
+          // Send plain text
+          await apiRequest('/api/messages', 'POST', { content });
+          showToast('已同步发送至流转流', 'success');
+        }
+
         composerInput.value = '';
         composerInput.style.height = 'auto';
         charCount.textContent = '0 字符';
-        showToast('已同步发送至流转流', 'success');
         await fetchMessages(true);
       } catch (err) {
         showToast('发送失败: ' + err.message, 'error');
@@ -1438,6 +1924,7 @@ export function renderHTML() {
 
     // Auto-detect and render URL Chips
     function escapeAndLinkify(text) {
+      if (!text) return '';
       const escaped = text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -1464,20 +1951,37 @@ export function renderHTML() {
       });
     }
 
+    // Helper to get image URL for a message
+    function getMessageImageUrl(msg) {
+      if (msg.file_key) {
+        return \`/api/files/\${encodeURIComponent(msg.file_key)}?token=\${encodeURIComponent(STATE.token)}\`;
+      }
+      if (msg.content && msg.content.startsWith('data:image/')) {
+        return msg.content;
+      }
+      return '';
+    }
+
     // Render Stream Feed
     function renderFeed() {
       let filtered = STATE.messages;
       if (STATE.searchQuery) {
         const q = STATE.searchQuery.toLowerCase();
-        filtered = filtered.filter(m => m.content.toLowerCase().includes(q));
+        filtered = filtered.filter(m => {
+          const isImg = m.type === 'image' || (m.content && m.content.startsWith('data:image/'));
+          if (q === '图片' || q === '[图片]' || q === 'image') return isImg;
+          const matchContent = m.content && m.content.toLowerCase().includes(q);
+          const matchFileName = m.file_name && m.file_name.toLowerCase().includes(q);
+          return matchContent || matchFileName;
+        });
       }
 
       if (filtered.length === 0) {
         streamFeed.innerHTML = \`
           <div class="empty-state glass" style="border-radius: var(--radius-lg);">
             <div class="empty-icon">📭</div>
-            <div style="font-size: 15px; font-weight: 600; color: #cbd5e1;">暂无流转文本</div>
-            <p style="font-size: 13px;">在上方输入或粘贴文本，将在手机、平板和电脑端实时显示</p>
+            <div style="font-size: 15px; font-weight: 600; color: #cbd5e1;">暂无流转记录</div>
+            <p style="font-size: 13px;">在上方输入文本或直接粘贴/发送图片，将在手机与电脑端实时同步</p>
           </div>
         \`;
         return;
@@ -1485,6 +1989,11 @@ export function renderHTML() {
 
       streamFeed.innerHTML = filtered.map(msg => {
         const isSelected = STATE.selectedIds.has(msg.id);
+        const isImage = msg.type === 'image' || (msg.content && msg.content.startsWith('data:image/'));
+        const imageUrl = isImage ? getMessageImageUrl(msg) : '';
+        const tagText = isImage ? \`🖼️ 图片 \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\` : \`\${(msg.content || '').length} 字\`;
+        const fileName = msg.file_name || (isImage ? 'image.png' : 'text.txt');
+
         return \`
           <div class="msg-card glass \${isSelected ? 'selected' : ''}" data-id="\${msg.id}">
             <div class="msg-header">
@@ -1493,24 +2002,41 @@ export function renderHTML() {
                   <input type="checkbox" class="msg-checkbox item-select-cb" data-id="\${msg.id}" \${isSelected ? 'checked' : ''}>
                 \` : ''}
                 <span class="msg-time" title="\${new Date(msg.created_at).toLocaleString()}">\${formatTime(msg.created_at)}</span>
-                <span class="msg-tag">\${msg.content.length} 字</span>
+                <span class="msg-tag \${isImage ? 'image-tag' : ''}">\${tagText}</span>
               </div>
               <div class="msg-actions">
-                <button class="btn btn-copy-card" data-copy="\${encodeURIComponent(msg.content)}">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                  </svg>
-                  <span>复制</span>
-                </button>
-                <button class="btn btn-icon btn-download-card" data-content="\${encodeURIComponent(msg.content)}" data-time="\${msg.created_at}" style="width: 28px; height: 28px; padding: 5px;" title="下载保存为 .txt">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                </button>
-                <button class="btn btn-danger btn-icon btn-single-delete" data-id="\${msg.id}" style="width: 28px; height: 28px; padding: 5px;" title="删除这条">
+                \${isImage ? \`
+                  <button class="btn btn-copy-card btn-copy-image-card" data-img="\${encodeURIComponent(imageUrl)}" title="复制图片到系统剪贴板 (可在微信/QQ直接粘贴)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                    <span>复制图片</span>
+                  </button>
+                  <button class="btn btn-icon btn-download-image-card" data-img="\${encodeURIComponent(imageUrl)}" data-name="\${encodeURIComponent(fileName)}" style="width: 28px; height: 28px; padding: 5px;" title="下载原图">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  </button>
+                \` : \`
+                  <button class="btn btn-copy-card btn-copy-text-card" data-copy="\${encodeURIComponent(msg.content)}">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                    <span>复制</span>
+                  </button>
+                  <button class="btn btn-icon btn-download-text-card" data-content="\${encodeURIComponent(msg.content)}" data-time="\${msg.created_at}" style="width: 28px; height: 28px; padding: 5px;" title="保存为 .txt">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  </button>
+                \`}
+                <button class="btn btn-danger btn-icon btn-single-delete" data-id="\${msg.id}" style="width: 28px; height: 28px; padding: 5px;" title="删除这条记录">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -1518,7 +2044,17 @@ export function renderHTML() {
                 </button>
               </div>
             </div>
-            <div class="msg-content">\${escapeAndLinkify(msg.content)}</div>
+
+            \${!isImage || (msg.content && !msg.content.startsWith('data:image/')) ? \`
+              <div class="msg-content">\${escapeAndLinkify(msg.content)}</div>
+            \` : ''}
+
+            \${isImage ? \`
+              <div class="msg-image-wrap" data-img="\${encodeURIComponent(imageUrl)}" data-name="\${encodeURIComponent(fileName)}" title="点击全屏查看大图">
+                <img src="\${imageUrl}" alt="流转图片" class="msg-image-img" loading="lazy">
+                <div class="msg-image-badge">\${msg.file_size ? formatBytes(msg.file_size) : '查看大图'}</div>
+              </div>
+            \` : ''}
           </div>
         \`;
       }).join('');
@@ -1529,8 +2065,8 @@ export function renderHTML() {
 
     // Card Event Listeners
     function bindCardEvents() {
-      // Copy button
-      document.querySelectorAll('.btn-copy-card').forEach(btn => {
+      // Copy Text button
+      document.querySelectorAll('.btn-copy-text-card').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           e.stopPropagation();
           const text = decodeURIComponent(btn.getAttribute('data-copy'));
@@ -1545,14 +2081,31 @@ export function renderHTML() {
               span.textContent = '复制';
             }, 1800);
           } catch (err) {
-            // Fallback for older devices / safari
             fallbackCopy(text);
           }
         });
       });
 
+      // Copy Image button (Directly to Windows / System Clipboard)
+      document.querySelectorAll('.btn-copy-image-card').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const imgUrl = decodeURIComponent(btn.getAttribute('data-img'));
+          const span = btn.querySelector('span');
+          const ok = await copyImageToClipboard(imgUrl);
+          if (ok) {
+            btn.classList.add('copied');
+            span.textContent = '已复制图片!';
+            setTimeout(() => {
+              btn.classList.remove('copied');
+              span.textContent = '复制图片';
+            }, 2000);
+          }
+        });
+      });
+
       // Download single message as TXT
-      document.querySelectorAll('.btn-download-card').forEach(btn => {
+      document.querySelectorAll('.btn-download-text-card').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const content = decodeURIComponent(btn.getAttribute('data-content'));
@@ -1562,12 +2115,33 @@ export function renderHTML() {
         });
       });
 
+      // Download single message as Image
+      document.querySelectorAll('.btn-download-image-card').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const imgUrl = decodeURIComponent(btn.getAttribute('data-img'));
+          const name = decodeURIComponent(btn.getAttribute('data-name'));
+          downloadImageFile(imgUrl, name);
+        });
+      });
+
+      // Click Image to open Fullscreen Lightbox
+      document.querySelectorAll('.msg-image-wrap').forEach(wrap => {
+        wrap.addEventListener('click', (e) => {
+          if (STATE.selectMode) return;
+          e.stopPropagation();
+          const imgUrl = decodeURIComponent(wrap.getAttribute('data-img'));
+          const name = decodeURIComponent(wrap.getAttribute('data-name'));
+          openLightbox(imgUrl, name);
+        });
+      });
+
       // Single Delete
       document.querySelectorAll('.btn-single-delete').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           e.stopPropagation();
           const id = btn.getAttribute('data-id');
-          if (confirm('确认删除这条信息吗？')) {
+          if (confirm('确认删除这条记录（包括图片/文本）吗？')) {
             try {
               await apiRequest('/api/messages/' + id, 'DELETE');
               showToast('已删除', 'delete');
@@ -1675,7 +2249,10 @@ export function renderHTML() {
 
       const combinedText = selected.map((m, idx) => {
         const timeStr = new Date(m.created_at).toLocaleString();
-        return \`[#\${idx + 1} - \${timeStr}]\\n\${m.content}\\n----------------------------------------\\n\`;
+        const contentStr = (m.type === 'image' || (m.content && m.content.startsWith('data:image/')))
+          ? \`[图片文件: \${m.file_name || 'image.png'}]\`
+          : m.content;
+        return \`[#\${idx + 1} - \${timeStr}]\\n\${contentStr}\\n----------------------------------------\\n\`;
       }).join('\\n');
 
       const dateStr = new Date().toISOString().slice(0, 10);
@@ -1695,14 +2272,14 @@ export function renderHTML() {
       const ids = Array.from(STATE.selectedIds);
       if (ids.length === 0) return;
 
-      if (!confirm(\`确认删除选中的 \${ids.length} 条信息吗？该操作不可撤销。\`, 'batch')) {
+      if (!confirm(\`确认删除选中的 \${ids.length} 项记录吗？关联的 R2 图片与文本将一并清除，不可撤销。\`, 'batch')) {
         return;
       }
 
       btnBatchDelete.disabled = true;
       try {
         await apiRequest('/api/messages/batch-delete', 'POST', { ids });
-        showToast(\`成功删除 \${ids.length} 条信息\`, 'delete');
+        showToast(\`成功删除 \${ids.length} 条记录\`, 'delete');
         STATE.selectedIds.clear();
         await fetchMessages(true);
       } catch (err) {
@@ -1731,11 +2308,11 @@ export function renderHTML() {
       btn.addEventListener('click', async () => {
         const range = btn.getAttribute('data-range');
         let promptText = '';
-        if (range === '1h') promptText = '确认删除【最近 1 小时】内的所有信息吗？';
-        if (range === '1d') promptText = '确认删除【最近 1 天 (24h)】内的所有信息吗？';
-        if (range === '1w') promptText = '确认删除【最近 1 周 (7天)】内的所有信息吗？';
-        if (range === '1y') promptText = '确认删除【最近 1 年】内的所有信息吗？';
-        if (range === 'all') promptText = '⚠️ 极其危险警告：确认清空全部所有历史信息吗？此操作无法撤销！';
+        if (range === '1h') promptText = '确认删除【最近 1 小时】内的所有记录与图片吗？';
+        if (range === '1d') promptText = '确认删除【最近 1 天 (24h)】内的所有记录与图片吗？';
+        if (range === '1w') promptText = '确认删除【最近 1 周 (7天)】内的所有记录与图片吗？';
+        if (range === '1y') promptText = '确认删除【最近 1 年】内的所有记录与图片吗？';
+        if (range === 'all') promptText = '⚠️ 极其危险警告：确认清空全部所有历史记录与存储文件吗？此操作无法撤销！';
 
         if (!confirm(promptText)) return;
 
@@ -1754,7 +2331,9 @@ export function renderHTML() {
     // Register PWA Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(err => {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+          reg.update();
+        }).catch(err => {
           console.log('SW registration error:', err);
         });
       });
@@ -1788,7 +2367,7 @@ export function renderHTML() {
 
     window.addEventListener('appinstalled', () => {
       if (btnInstallApp) btnInstallApp.style.display = 'none';
-      showToast('🎉 TextRelay 文本中转站已安装为独立应用', 'success');
+      showToast('🎉 CF-TextRelay 已安装为独立应用', 'success');
     });
 
     // Start App

@@ -9,3 +9,8 @@ AUTH_PASSWORD = "your_secure_password" # 访问密码，请自行修改
 binding = "DB"
 database_name = "info-db"
 database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # 运行 npx wrangler d1 create info-db 后填入生成的 ID
+
+# （可选推荐）Cloudflare R2 存储桶绑定，用于存放原图与文件图片
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "your-r2-bucket-name" # 填入你在 Cloudflare 创建的 R2 存储桶名称
