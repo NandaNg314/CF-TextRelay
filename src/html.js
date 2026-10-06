@@ -1944,15 +1944,21 @@ export function renderHTML() {
       return new Date(timestamp).toLocaleString([], { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     }
 
-    // Auto-detect and render URL Chips
-    function escapeAndLinkify(text) {
+    // Helper to safely escape HTML special characters
+    function escapeHtml(text) {
       if (!text) return '';
-      const escaped = text
+      return String(text)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+    }
+
+    // Auto-detect and render URL Chips
+    function escapeAndLinkify(text) {
+      if (!text) return '';
+      const escaped = escapeHtml(text);
 
       const urlRegex = /(https?:\\/\\/[^\\s<>&"']+)/gi;
       return escaped.replace(urlRegex, (url) => {
@@ -2020,9 +2026,10 @@ export function renderHTML() {
         if (isImage) {
           tagText = \`🖼️ 图片 \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\`;
         } else if (isFile) {
-          tagText = \`📄 \${msg.file_name || '原文件'} \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\`;
+          tagText = \`📄 \${escapeHtml(msg.file_name) || '原文件'} \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\`;
         }
         const fileName = msg.file_name || (isImage ? 'image.png' : 'file.txt');
+        const safeFileName = escapeHtml(fileName);
 
         return \`
           <div class="msg-card glass \${isSelected ? 'selected' : ''}" data-id="\${msg.id}">

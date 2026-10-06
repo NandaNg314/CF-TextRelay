@@ -234,6 +234,11 @@ export default {
         return jsonResponse({ success: false, error: '缺少文件 key' }, 400);
       }
 
+      // 安全防御：严禁路径穿越，限制只允许访问受信目录
+      if (fileKey.includes('..') || (!fileKey.startsWith('images/') && !fileKey.startsWith('files/'))) {
+        return jsonResponse({ success: false, error: '非法的文件路径' }, 400);
+      }
+
       try {
         const object = await bucket.get(fileKey);
         if (!object) {
@@ -315,6 +320,9 @@ export default {
             const file = formData.get('file');
 
             if (file && typeof file === 'object' && file.name) {
+              if (file.size > 50 * 1024 * 1024) {
+                return jsonResponse({ success: false, error: '单文件大小不能超过 50MB' }, 400);
+              }
               mimeType = file.type || 'application/octet-stream';
               const isImage = mimeType.startsWith('image/');
               type = isImage ? 'image' : 'file';

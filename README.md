@@ -81,7 +81,7 @@ npm install
 npx wrangler d1 create info-db
 
 # 创建 R2 存储桶
-npx wrangler r2 bucket create text-relay-images
+npx wrangler r2 bucket create your-r2-bucket-name
 ```
 
 ### 3. 配置 `wrangler.toml`
@@ -111,7 +111,7 @@ database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # 填入生成的 D1 ID
 # Cloudflare R2 存储桶绑定（用于存放原图与文档文件）
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "text-relay-images" # 填入你的 R2 存储桶名称
+bucket_name = "your-r2-bucket-name" # 填入你的 R2 存储桶名称
 ```
 
 ### 4. 一键部署上线
