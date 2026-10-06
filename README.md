@@ -70,34 +70,45 @@
 
 ### 1. 克隆代码并安装依赖
 ```bash
-git clone https://github.com/your-username/CF-TextRelay.git
+git clone https://github.com/NandaNg314/CF-TextRelay.git
 cd CF-TextRelay
 npm install
 ```
 
-### 2. 创建 Cloudflare D1 数据库与 R2 存储桶
+### 2. 登录 Cloudflare 并创建资源
+如果首次使用 Wrangler CLI，请先执行登录授权：
 ```bash
-# 创建 D1 数据库
+npx wrangler login
+```
+
+创建 Cloudflare D1 数据库与 R2 对象存储桶：
+```bash
+# 1. 创建 D1 数据库（命令执行后会返回 database_id，请复制留存）
 npx wrangler d1 create info-db
 
-# 创建 R2 存储桶
-npx wrangler r2 bucket create your-r2-bucket-name
+# 2. 创建 R2 存储桶（名称可自定义，如 info-bucket）
+npx wrangler r2 bucket create info-bucket
 ```
 
 ### 3. 配置 `wrangler.toml`
 复制配置模板：
 ```bash
+# Mac / Linux / Windows PowerShell:
 cp wrangler.toml.example wrangler.toml
+
+# Windows CMD 环境可使用:
+# copy wrangler.toml.example wrangler.toml
 ```
+
 编辑 `wrangler.toml`，填入生成的 `database_id`，并设置你的专属访问密码：
 ```toml
 name = "cf-text-relay"
 main = "src/index.js"
 compatibility_date = "2024-03-20"
 
-# 自定义域名（可选）
+# 自定义域名（可选推荐：如国内网络直连，可在 Cloudflare 托管域名并绑定）
 # routes = [
-#   { pattern = "your-domain.com", custom_domain = true }
+#   { pattern = "relay.your-domain.com", custom_domain = true }
 # ]
 
 [vars]
@@ -106,19 +117,21 @@ AUTH_PASSWORD = "your_secure_password" # 改为你自己的专属访问密码
 [[d1_databases]]
 binding = "DB"
 database_name = "info-db"
-database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # 填入生成的 D1 ID
+database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # 填入步骤 2 生成的 D1 ID
 
 # Cloudflare R2 存储桶绑定（用于存放原图与文档文件）
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "your-r2-bucket-name" # 填入你的 R2 存储桶名称
+bucket_name = "info-bucket" # 填入步骤 2 创建的 R2 存储桶名称
 ```
+
+> 💡 **提示**：系统已内置数据库热初始化与自升级机制，Worker 首次启动访问时会自动创建所需的数据表与索引；如需手动导入表结构也可执行 `npm run d1:init:prod`。
 
 ### 4. 一键部署上线
 ```bash
 npm run deploy
 ```
-部署完成后，终端会输出你的专属访问链接（如 `https://cf-text-relay.xxx.workers.dev`）！
+部署完成后，终端会输出你的专属访问链接（如 `https://cf-text-relay.xxx.workers.dev`）！访问并在首次弹窗中输入配置的密码即可畅快使用。
 
 ---
 
