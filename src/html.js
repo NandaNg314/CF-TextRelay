@@ -1405,19 +1405,70 @@ export function renderHTML() {
       }
       header {
         top: 8px;
-        padding: 0 12px;
+        padding: 8px 10px !important;
+        gap: 6px !important;
+        justify-content: space-between;
+        overflow: hidden;
         height: 54px;
+        box-sizing: border-box;
         border-radius: var(--radius-lg);
+      }
+      .brand {
+        gap: 8px;
+        min-width: 0;
+        flex-shrink: 1;
+        overflow: hidden;
+      }
+      .brand-icon {
+        width: 34px !important;
+        height: 34px !important;
+        flex-shrink: 0;
+      }
+      .brand-title {
+        min-width: 0;
+        overflow: hidden;
       }
       .brand-title h1 {
         font-size: 14px;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .brand-status {
-        font-size: 10.5px;
+        font-size: 11px;
+        gap: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      #statusText {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .badge-capsule {
+        padding: 1px 6px;
+        flex-shrink: 0;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px !important;
+        flex-shrink: 0;
+        background: rgba(118, 118, 128, 0.08);
+        padding: 3px;
+        border-radius: 12px;
       }
       .btn-header-icon {
-        width: 32px;
-        height: 32px;
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        padding: 0 !important;
+        border-radius: 8px !important;
+        border: none;
+      }
+      .btn-header-icon svg {
+        width: 15px;
+        height: 15px;
       }
       .composer-card {
         padding: 14px;
@@ -1540,6 +1591,27 @@ export function renderHTML() {
       .stream-feed,
       .msg-card {
         overflow-x: clip;
+      }
+    }
+
+    /* ========= Very narrow phones (< 480px): terse status + tight cards ========= */
+    @media (max-width: 480px) {
+      /* Status collapses to just ● + count badge, freeing header width */
+      #statusText {
+        display: none;
+      }
+      .brand-status {
+        gap: 5px;
+      }
+      /* Card action pill keeps symmetric breathing room from card edge */
+      .msg-card {
+        padding: 12px !important;
+      }
+      .msg-header {
+        gap: 6px;
+      }
+      .msg-actions {
+        gap: 3px;
       }
     }
   </style>
