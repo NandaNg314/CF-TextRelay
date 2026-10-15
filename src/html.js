@@ -694,8 +694,8 @@ export function renderHTML() {
       box-shadow: var(--glass-inset);
     }
 
-    /* ========= Bento History — Masonry (CSS Columns) ========= */
-    /* Mobile-first: single column flex stack */
+    /* ========= Bento History — True Horizontal-First Masonry ========= */
+    /* Mobile-first: single column flex stack (0,1,2,3 top-to-bottom) */
     .stream-feed {
       display: flex;
       flex-direction: column;
@@ -703,32 +703,38 @@ export function renderHTML() {
       width: 100%;
     }
 
-    /* Desktop: seamless masonry columns (no vertical gaps) */
+    /* Mobile-first: column wrappers hidden (JS renders a flat list on mobile) */
+    .stream-feed .masonry-col {
+      flex: 1 1 0;
+      min-width: 0;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Desktop: two side-by-side vertical columns, cards interleaved by JS */
     @media (min-width: 768px) {
       .stream-feed {
-        display: block;
-        column-count: 2;
-        column-gap: 16px;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .stream-feed .masonry-col {
+        display: flex;
       }
     }
 
-    /* Anti-break rules keep each card intact & flowing tightly */
+    /* Cards keep natural height — no forced equal rows, no vertical holes */
     .stream-feed .msg-card {
-      break-inside: avoid;
-      -webkit-column-break-inside: avoid;
-      page-break-inside: avoid;
-      margin-bottom: 16px;
       width: 100%;
-      display: inline-block;
-      vertical-align: top;
+      min-width: 0;
+      margin-bottom: 0;
     }
 
     /* Empty state spans full width */
     .stream-feed > .empty-state {
       width: 100%;
-      break-inside: avoid;
-      column-span: all;
-      -webkit-column-span: all;
     }
 
     /* ========= Clip Card (iOS Notes / Paste feel) ========= */
@@ -2502,6 +2508,16 @@ export function renderHTML() {
       if (STATE.token) fetchMessages(true);
     });
 
+    // Re-layout history when crossing the mobile/desktop masonry breakpoint
+    let lastTwoColState = isDesktopTwoCol();
+    window.addEventListener('resize', () => {
+      const now = isDesktopTwoCol();
+      if (now !== lastTwoColState) {
+        lastTwoColState = now;
+        if (STATE.token && STATE.messages.length > 0) renderFeed();
+      }
+    });
+
     btnRefresh.addEventListener('click', () => {
       btnRefresh.style.transform = 'rotate(180deg)';
       setTimeout(() => btnRefresh.style.transform = '', 300);
@@ -2649,7 +2665,7 @@ export function renderHTML() {
         return;
       }
 
-      streamFeed.innerHTML = filtered.map(msg => {
+      const cardHtmlList = filtered.map(msg => {
         const isSelected = STATE.selectedIds.has(msg.id);
         const isImage = msg.type === 'image' || (msg.content && msg.content.startsWith('data:image/'));
         const isFile = !isImage && (msg.type === 'file' || msg.file_key);
@@ -2756,10 +2772,32 @@ export function renderHTML() {
             \` : ''}
           </div>
         \`;
-      }).join('');
+      });
+
+      // Assemble layout: horizontal-first true masonry on desktop, strict single column on mobile.
+      // Uses a JS-rendered wrapper so reading order stays left→right, top→bottom by recency.
+      if (isDesktopTwoCol()) {
+        const left = [];
+        const right = [];
+        cardHtmlList.forEach((html, i) => {
+          if (i % 2 === 0) left.push(html);
+          else right.push(html);
+        });
+        streamFeed.innerHTML = \`
+          <div class="masonry-col masonry-col-left">\${left.join('')}</div>
+          <div class="masonry-col masonry-col-right">\${right.join('')}</div>
+        \`;
+      } else {
+        streamFeed.innerHTML = cardHtmlList.join('');
+      }
 
       bindCardEvents();
       updateSelectionBar();
+    }
+
+    // True when the desktop two-column masonry breakpoint is active
+    function isDesktopTwoCol() {
+      return window.matchMedia('(min-width: 768px)').matches;
     }
 
     // Card Event Listeners
