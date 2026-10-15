@@ -1,41 +1,109 @@
-// Liquid Glass UI for CF Info Worker with Full Image & Text Sync Support
+// Raycast / Linear / macOS Sequoia UI for CF-TextRelay
 export function renderHTML() {
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>CF-TextRelay · 个人跨端文本与图片中转</title>
+  <title>CF-TextRelay · 个人跨端文本与图片中转站</title>
   <link rel="manifest" href="/manifest.json?v=2">
   <link rel="icon" type="image/png" sizes="192x192" href="/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="/icon.svg">
   <link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png">
-  <meta name="theme-color" content="#07090e">
+  <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#161618" media="(prefers-color-scheme: dark)">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CF-TextRelay">
   <style>
+    /* ============================================================
+       CF-TextRelay · macOS Sequoia Native Design System
+       Liquid Glass · Vibrancy · Apple System Colors
+       ============================================================ */
+
     :root {
-      --bg: #07090e;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --card-bg-hover: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.12);
-      --card-border-highlight: rgba(255, 255, 255, 0.28);
-      --glass-blur: 24px;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.4);
-      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
-      --danger: #ef4444;
-      --danger-glow: rgba(239, 68, 68, 0.4);
-      --success: #10b981;
+      /* Apple System Colors */
+      --sys-blue: #007AFF;
+      --sys-blue-hover: #0A84FF;
+      --sys-green: #34C759;
+      --sys-red: #FF3B30;
+      --sys-orange: #FF9F0A;
+      --sys-label-secondary: #8E8E93;
+
+      /* Light Mode (macOS Native) */
+      --bg: #F2F2F7;
+      --card-bg: rgba(255, 255, 255, 0.78);
+      --card-bg-hover: rgba(255, 255, 255, 0.9);
+      --card-bg-solid: rgba(255, 255, 255, 0.72);
+      --card-border: rgba(255, 255, 255, 0.85);
+      --card-border-hover: rgba(255, 255, 255, 1);
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+      --card-shadow-hover: 0 18px 40px -8px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.04);
+      --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      --text-main: #1D1D1F;
+      --text-muted: #6E6E73;
+      --text-subtle: #8E8E93;
+      --accent: #007AFF;
+      --accent-glow: rgba(0, 122, 255, 0.28);
+      --fill-quaternary: rgba(120, 120, 128, 0.08);
+      --fill-tertiary: rgba(120, 120, 128, 0.12);
+      --separator: rgba(60, 60, 67, 0.12);
+      --danger: #FF3B30;
+      --danger-bg: rgba(255, 59, 48, 0.1);
+      --danger-border: rgba(255, 59, 48, 0.28);
+      --success: #34C759;
+      --blur-amount: 30px;
+      --sat-amount: 190%;
+      --cloud-1: rgba(0, 122, 255, 0.35);
+      --cloud-2: rgba(175, 82, 222, 0.28);
+      --cloud-3: rgba(90, 200, 250, 0.25);
+
+      /* Radii (Sequoia generous rounding) */
+      --radius-xs: 6px;
       --radius-sm: 10px;
-      --radius-md: 16px;
-      --radius-lg: 24px;
-      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Segoe UI", Roboto, sans-serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-xl: 20px;
+      --radius-2xl: 22px;
+      --radius-3xl: 26px;
+
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Helvetica Neue", "Segoe UI", Roboto, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+      --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        /* macOS Dark Mode (Deep space blue-gray, never pure black) */
+        --bg: #161618;
+        --card-bg: rgba(38, 38, 42, 0.72);
+        --card-bg-hover: rgba(48, 48, 53, 0.8);
+        --card-bg-solid: rgba(38, 38, 42, 0.68);
+        --card-border: rgba(255, 255, 255, 0.09);
+        --card-border-hover: rgba(255, 255, 255, 0.18);
+        --card-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.45);
+        --card-shadow-hover: 0 22px 48px -8px rgba(0, 0, 0, 0.6);
+        --glass-inset: inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+        --text-main: #F5F5F7;
+        --text-muted: #A1A1A6;
+        --text-subtle: #8E8E93;
+        --accent: #0A84FF;
+        --accent-glow: rgba(10, 132, 255, 0.35);
+        --fill-quaternary: rgba(120, 120, 128, 0.16);
+        --fill-tertiary: rgba(120, 120, 128, 0.24);
+        --separator: rgba(255, 255, 255, 0.1);
+        --danger: #FF453A;
+        --danger-bg: rgba(255, 69, 58, 0.12);
+        --danger-border: rgba(255, 69, 58, 0.3);
+        --success: #30D158;
+        --blur-amount: 30px;
+        --sat-amount: 180%;
+        --cloud-1: rgba(10, 132, 255, 0.22);
+        --cloud-2: rgba(94, 92, 230, 0.2);
+        --cloud-3: rgba(191, 90, 242, 0.16);
+      }
     }
 
     * {
@@ -45,149 +113,175 @@ export function renderHTML() {
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
+    html, body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       background-color: var(--bg);
       color: var(--text-main);
       font-family: var(--font);
-      min-height: 100vh;
-      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    body {
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
-      overflow-x: hidden;
-      padding-bottom: max(40px, env(safe-area-inset-bottom, 40px));
+      padding-bottom: max(48px, env(safe-area-inset-bottom, 48px));
       line-height: 1.5;
+      letter-spacing: -0.01em;
     }
 
-    /* Ambient Liquid Gradient Blobs */
+    /* ========= Ambient Vibrancy Background (Soft color clouds) ========= */
     .ambient-background {
       position: fixed;
       inset: 0;
-      z-index: 0;
       pointer-events: none;
+      z-index: 0;
       overflow: hidden;
     }
 
-    .blob {
+    .ambient-cloud {
       position: absolute;
       border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.38;
-      animation: float 20s infinite alternate ease-in-out;
+      opacity: 0.35;
+      filter: blur(90px);
+      will-change: transform;
     }
 
-    .blob-1 {
-      width: 480px;
-      height: 480px;
-      background: radial-gradient(circle, #4f46e5 0%, #06b6d4 100%);
-      top: -120px;
-      left: -80px;
-      animation-duration: 22s;
+    .ambient-cloud.c1 {
+      width: 640px;
+      height: 640px;
+      top: -220px;
+      left: -160px;
+      background: var(--cloud-1);
+      animation: floatA 22s ease-in-out infinite;
     }
 
-    .blob-2 {
+    .ambient-cloud.c2 {
+      width: 560px;
+      height: 560px;
+      top: -140px;
+      right: -180px;
+      background: var(--cloud-2);
+      animation: floatB 26s ease-in-out infinite;
+    }
+
+    .ambient-cloud.c3 {
       width: 520px;
       height: 520px;
-      background: radial-gradient(circle, #ec4899 0%, #8b5cf6 100%);
-      bottom: -150px;
-      right: -100px;
-      animation-duration: 26s;
+      bottom: -240px;
+      left: 30%;
+      background: var(--cloud-3);
+      animation: floatA 30s ease-in-out infinite reverse;
     }
 
-    .blob-3 {
-      width: 380px;
-      height: 380px;
-      background: radial-gradient(circle, #06b6d4 0%, #10b981 100%);
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation-duration: 28s;
-      opacity: 0.22;
-    }
-
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
+    @keyframes floatA {
+      0%, 100% { transform: translate(0, 0) scale(1); }
       50% { transform: translate(40px, 30px) scale(1.08); }
-      100% { transform: translate(-30px, -20px) scale(0.95); }
     }
 
-    /* Liquid Glass Common Style */
+    @keyframes floatB {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-50px, 40px) scale(1.1); }
+    }
+
+    /* ========= Liquid Glass Material ========= */
     .glass {
       background: var(--card-bg);
-      backdrop-filter: blur(var(--glass-blur)) saturate(190%);
-      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
       border: 1px solid var(--card-border);
-      box-shadow: 
-        0 16px 36px -10px rgba(0, 0, 0, 0.45),
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.18);
+      box-shadow: var(--glass-inset), var(--card-shadow);
     }
 
-    .glass-pill {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 9999px;
-      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
-    }
-
-    /* App Container */
+      /* ========= App Container (max-w-6xl / 1120px) ========= */
     .app-container {
       width: 100%;
-      max-width: 820px;
-      padding: 16px 20px;
+      max-width: 1120px;
+      padding: 20px 24px 48px;
       z-index: 1;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      align-items: stretch;
+      gap: 16px;
+      margin: 0 auto;
     }
 
-    /* Header */
+    /* Header: macOS Control Center floating bar */
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 20px;
-      border-radius: var(--radius-lg);
+      padding: 0 16px;
+      height: 60px;
+      width: 100%;
+      align-self: stretch;
+      box-sizing: border-box;
+      border-radius: var(--radius-xl);
       position: sticky;
       top: 14px;
-      z-index: 100;
+      z-index: 40;
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset), var(--card-shadow);
+      transition: box-shadow 0.25s var(--ease-apple), border-color 0.25s var(--ease-apple);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 11px;
       text-decoration: none;
       color: inherit;
+      user-select: none;
     }
 
+    /* macOS App Icon (Superellipse with top highlight) */
     .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: var(--accent-gradient);
+      width: 34px;
+      height: 34px;
+      border-radius: 22.5%;
+      background: linear-gradient(180deg, #4DA3FF 0%, #007AFF 55%, #0062CC 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 15px var(--accent-glow);
-      font-size: 18px;
       flex-shrink: 0;
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 2px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+
+    .brand-icon::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 22.5%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 45%);
+      pointer-events: none;
     }
 
     .brand-title {
       display: flex;
       flex-direction: column;
+      gap: 2px;
     }
 
     .brand-title h1 {
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 600;
       letter-spacing: -0.02em;
-      background: linear-gradient(120deg, #ffffff 40%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text-main);
+      line-height: 1.2;
     }
 
     .brand-status {
@@ -195,143 +289,220 @@ export function renderHTML() {
       align-items: center;
       gap: 6px;
       font-size: 11px;
-      color: var(--text-muted);
+      color: var(--text-subtle);
+      white-space: nowrap;
+      line-height: 1;
     }
 
     .status-dot {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--success);
       box-shadow: 0 0 8px var(--success);
       animation: pulse 2.5s infinite;
+      flex-shrink: 0;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.85); }
+      50% { opacity: 0.55; transform: scale(0.85); }
+    }
+
+    .badge-capsule {
+      padding: 1px 7px;
+      font-size: 10px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-subtle);
+      background: var(--fill-quaternary);
+      border: none;
+      border-radius: 9999px;
+      margin-left: 2px;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
-    /* Buttons */
+    /* ========= Buttons ========= */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 8px 14px;
+      padding: 0 13px;
+      height: 32px;
       border-radius: var(--radius-sm);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       color: var(--text-main);
       cursor: pointer;
-      border: 1px solid var(--card-border);
-      background: rgba(255, 255, 255, 0.06);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid transparent;
+      background: var(--fill-quaternary);
+      transition: all 0.18s var(--ease-apple);
       user-select: none;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      font-family: inherit;
     }
 
     .btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: var(--card-border-highlight);
-      transform: translateY(-1px);
+      background: var(--fill-tertiary);
+      color: var(--text-main);
     }
 
     .btn:active {
-      transform: translateY(1px) scale(0.98);
+      transform: scale(0.97);
     }
 
-    .btn-icon {
-      padding: 8px;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
+    /* Header icon buttons (superellipse matte) */
+    .btn-header-icon {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border-radius: 22.5%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      background: var(--fill-quaternary);
+      border: 1px solid var(--card-border);
+      transition: all 0.15s var(--ease-apple);
+    }
+
+    .btn-header-icon:hover {
+      color: var(--text-main);
+      background: var(--fill-tertiary);
+      border-color: var(--card-border-hover);
+    }
+
+    .btn-header-icon:active {
+      transform: scale(0.92);
     }
 
     .btn-primary {
-      background: var(--accent-gradient);
-      border: none;
-      color: #ffffff;
-      box-shadow: 0 4px 16px var(--accent-glow);
+      background: var(--accent);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+      font-weight: 500;
     }
 
     .btn-primary:hover {
-      box-shadow: 0 6px 22px rgba(99, 102, 241, 0.6);
-      background: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%);
+      background: var(--sys-blue-hover);
+      box-shadow: 0 6px 18px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      color: #FFFFFF;
     }
 
     .btn-danger {
-      background: rgba(239, 68, 68, 0.15);
-      border-color: rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
+      background: var(--danger-bg);
+      border-color: var(--danger-border);
+      color: var(--danger);
     }
 
     .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.28);
-      border-color: rgba(239, 68, 68, 0.5);
+      background: rgba(255, 59, 48, 0.18);
+      border-color: var(--danger);
+      color: var(--danger);
+      box-shadow: 0 0 12px rgba(255, 59, 48, 0.2);
     }
 
     .btn-accent {
-      color: #a5b4fc;
-      border-color: rgba(99, 102, 241, 0.3);
-      background: rgba(99, 102, 241, 0.12);
+      color: var(--accent);
+      border-color: rgba(0, 122, 255, 0.28);
+      background: rgba(0, 122, 255, 0.1);
     }
 
     .btn-accent:hover {
-      background: rgba(99, 102, 241, 0.22);
-      border-color: rgba(99, 102, 241, 0.5);
+      background: rgba(0, 122, 255, 0.18);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
-    /* Composer (Input Box) */
+    /* ========= Desktop Split-View Workbench ========= */
+    .workbench {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: start;
+      width: 100%;
+    }
+
+    @media (min-width: 1024px) {
+      .workbench {
+        grid-template-columns: 360px 1fr;
+        gap: 24px;
+      }
+    }
+
+    /* ========= Left: Quick Note Composer (Sticky) ========= */
+    .composer-column {
+      width: 100%;
+    }
+
+    @media (min-width: 1024px) {
+      .composer-column {
+        position: sticky;
+        top: 24px;
+      }
+    }
+
     .composer-card {
-      border-radius: var(--radius-lg);
-      padding: 18px 20px;
+      border-radius: var(--radius-2xl);
+      padding: 18px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+      gap: 12px;
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset), var(--card-shadow);
+      transition: border-color 0.25s var(--ease-apple), box-shadow 0.25s var(--ease-apple);
     }
 
+    .composer-card:focus-within,
     .composer-card.dragover {
-      border-color: #38bdf8 !important;
-      background: rgba(56, 189, 248, 0.08) !important;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+      border-color: rgba(0, 122, 255, 0.5);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.14), var(--glass-inset), 0 18px 40px -8px rgba(0, 0, 0, 0.12);
     }
 
     .composer-input {
       width: 100%;
-      min-height: 84px;
+      min-height: 200px;
       background: transparent;
       border: none;
       outline: none;
       color: var(--text-main);
-      font-family: inherit;
+      font-family: var(--font);
       font-size: 15px;
       line-height: 1.6;
       resize: none;
       scrollbar-width: thin;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .composer-input::placeholder {
-      color: rgba(148, 163, 184, 0.7);
+      color: var(--text-subtle);
+      font-size: 14.5px;
     }
 
-    /* Pending Image Card in Composer */
+    /* Pending attachment banner */
     .pending-image-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
       padding: 10px 14px;
-      background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.3);
+      background: rgba(0, 122, 255, 0.08);
+      border: 1px solid rgba(0, 122, 255, 0.24);
       border-radius: var(--radius-md);
-      animation: fadeIn 0.25s ease-out;
+      animation: fadeIn 0.25s var(--ease-apple);
     }
 
     .pending-image-info {
@@ -342,12 +513,12 @@ export function renderHTML() {
     }
 
     .pending-image-thumb {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
       object-fit: cover;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--card-border);
+      background: var(--fill-quaternary);
       flex-shrink: 0;
     }
 
@@ -360,8 +531,8 @@ export function renderHTML() {
 
     .pending-image-name {
       font-size: 13px;
-      font-weight: 600;
-      color: #f8fafc;
+      font-weight: 500;
+      color: var(--text-main);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -369,17 +540,27 @@ export function renderHTML() {
 
     .pending-image-size {
       font-size: 11px;
-      color: #94a3b8;
+      color: var(--text-subtle);
+    }
+
+    .composer-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-subtle);
+      white-space: nowrap;
+      min-height: 14px;
     }
 
     .composer-footer {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--separator);
+      flex-wrap: nowrap;
     }
 
     .composer-info {
@@ -387,98 +568,185 @@ export function renderHTML() {
       align-items: center;
       gap: 12px;
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--text-subtle);
+      white-space: nowrap;
     }
 
     .shortcut-hint {
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      color: var(--text-subtle);
     }
 
     .kbd {
-      padding: 2px 6px;
+      padding: 1px 5px;
       border-radius: 5px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      font-family: var(--mono);
-      font-size: 10px;
+      background: var(--fill-quaternary);
+      border: 1px solid var(--card-border);
+      font-family: var(--font);
+      font-size: 10.5px;
+      color: var(--text-muted);
     }
 
     .composer-btns {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      margin-left: auto;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+
+    /* iOS Pill buttons */
+    .composer-btns .btn {
+      height: 32px;
+      border-radius: 9999px;
+      font-size: 12.5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Send button pinned to the right edge */
+    .composer-btns #btnSend {
       margin-left: auto;
     }
 
-    /* Controls Bar */
+    /* ========= Right Column ========= */
+    .content-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    /* Spotlight-style search & controls */
     .controls-bar {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 4px 2px;
+      gap: 10px;
+      width: 100%;
     }
 
     .search-box {
       flex: 1;
-      max-width: 320px;
       position: relative;
       display: flex;
       align-items: center;
+      height: 42px;
     }
 
     .search-icon {
       position: absolute;
-      left: 12px;
-      width: 15px;
-      height: 15px;
-      color: var(--text-muted);
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--text-subtle);
       pointer-events: none;
     }
 
     .search-input {
       width: 100%;
-      padding: 8px 12px 8px 36px;
-      border-radius: var(--radius-sm);
-      background: rgba(255, 255, 255, 0.05);
+      height: 42px;
+      padding: 0 16px 0 38px;
+      border-radius: var(--radius-md);
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
       border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset);
       color: var(--text-main);
-      font-size: 13px;
+      font-size: 14px;
+      font-family: var(--font);
       outline: none;
-      transition: all 0.2s;
+      transition: all 0.2s var(--ease-apple);
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .search-input:focus {
-      border-color: var(--accent);
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
+      border-color: rgba(0, 122, 255, 0.5);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.14), var(--glass-inset);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-subtle);
     }
 
     .toolbar-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      height: 42px;
     }
 
-    /* Stream Feed */
+    .btn-select-mode {
+      height: 42px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      white-space: nowrap;
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset);
+    }
+
+    /* ========= Bento History — Masonry (CSS Columns) ========= */
+    /* Mobile-first: single column flex stack */
     .stream-feed {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
       width: 100%;
     }
 
+    /* Desktop: seamless masonry columns (no vertical gaps) */
+    @media (min-width: 768px) {
+      .stream-feed {
+        display: block;
+        column-count: 2;
+        column-gap: 16px;
+      }
+    }
+
+    /* Anti-break rules keep each card intact & flowing tightly */
+    .stream-feed .msg-card {
+      break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+      page-break-inside: avoid;
+      margin-bottom: 16px;
+      width: 100%;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    /* Empty state spans full width */
+    .stream-feed > .empty-state {
+      width: 100%;
+      break-inside: avoid;
+      column-span: all;
+      -webkit-column-span: all;
+    }
+
+    /* ========= Clip Card (iOS Notes / Paste feel) ========= */
     .msg-card {
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
+      border-radius: var(--radius-xl);
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      transition: transform 0.2s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+      gap: 10px;
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset), var(--card-shadow);
+      transition: transform 0.25s var(--ease-apple), box-shadow 0.25s var(--ease-apple), border-color 0.25s var(--ease-apple), background-color 0.25s var(--ease-apple);
       position: relative;
-      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: fadeIn 0.3s var(--ease-apple);
+      min-width: 0;
     }
 
     @keyframes fadeIn {
@@ -487,21 +755,24 @@ export function renderHTML() {
     }
 
     .msg-card:hover {
+      transform: translateY(-2px);
       background: var(--card-bg-hover);
-      border-color: var(--card-border-highlight);
+      border-color: var(--card-border-hover);
+      box-shadow: var(--glass-inset), var(--card-shadow-hover);
     }
 
     .msg-card.selected {
-      background: rgba(99, 102, 241, 0.12);
-      border-color: rgba(99, 102, 241, 0.5);
-      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.4);
+      border-color: rgba(0, 122, 255, 0.6);
+      box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.28), var(--glass-inset), var(--card-shadow);
     }
 
     .msg-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: nowrap;
+      margin-bottom: 10px;
     }
 
     .msg-meta {
@@ -509,7 +780,10 @@ export function renderHTML() {
       align-items: center;
       gap: 8px;
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--text-subtle);
+      min-width: 0;
+      flex-wrap: nowrap;
+      overflow: hidden;
     }
 
     .msg-checkbox {
@@ -517,13 +791,14 @@ export function renderHTML() {
       -webkit-appearance: none;
       width: 18px;
       height: 18px;
-      border: 1.5px solid rgba(255, 255, 255, 0.3);
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid var(--card-border-hover);
+      border-radius: 6px;
+      background: var(--fill-quaternary);
       cursor: pointer;
       display: grid;
       place-content: center;
-      transition: all 0.2s;
+      transition: all 0.15s var(--ease-apple);
+      flex-shrink: 0;
     }
 
     .msg-checkbox:checked {
@@ -533,8 +808,8 @@ export function renderHTML() {
 
     .msg-checkbox:checked::before {
       content: "";
-      width: 9px;
-      height: 5px;
+      width: 8px;
+      height: 4px;
       border-left: 2px solid white;
       border-bottom: 2px solid white;
       transform: rotate(-45deg) translate(1px, -1px);
@@ -542,137 +817,231 @@ export function renderHTML() {
 
     .msg-time {
       font-variant-numeric: tabular-nums;
+      color: var(--sys-label-secondary);
+      white-space: nowrap;
     }
 
     .msg-tag {
-      padding: 2px 7px;
+      padding: 2px 10px;
       font-size: 11px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.06);
+      font-weight: 500;
+      border-radius: 999px;
+      background: var(--fill-quaternary);
+      border: none;
       color: var(--text-muted);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .msg-tag.image-tag {
-      background: rgba(6, 182, 212, 0.15);
-      color: #67e8f9;
-      border: 1px solid rgba(6, 182, 212, 0.25);
+      background: rgba(0, 122, 255, 0.12);
+      color: var(--accent);
     }
 
     .msg-tag.file-tag {
-      background: rgba(56, 189, 248, 0.15);
-      color: #7dd3fc;
-      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(175, 82, 222, 0.12);
+      color: #AF52DE;
     }
 
+    /* Pill Group for card actions */
     .msg-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      padding: 3px;
+      border-radius: 9999px;
+      background: var(--fill-quaternary);
+      border: 1px solid var(--card-border);
+      flex-shrink: 0;
+    }
+
+    .btn-card-action {
+      height: 26px;
+      padding: 0 10px;
+      font-size: 12px;
+      border-radius: 9999px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.16s var(--ease-apple);
+      user-select: none;
+      font-family: inherit;
+    }
+
+    .btn-card-action:hover {
+      background: var(--fill-tertiary);
+      color: var(--text-main);
+    }
+
+    .btn-card-action:active {
+      transform: scale(0.95);
     }
 
     .btn-copy-card {
-      padding: 5px 10px;
-      font-size: 12px;
-      border-radius: 7px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      color: #e2e8f0;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-weight: 500;
     }
 
     .btn-copy-card:hover {
-      background: rgba(99, 102, 241, 0.25);
-      border-color: rgba(99, 102, 241, 0.45);
-      color: #ffffff;
+      background: rgba(0, 122, 255, 0.15);
+      color: var(--accent);
     }
 
     .btn-copy-card.copied {
-      background: rgba(16, 185, 129, 0.25);
-      border-color: rgba(16, 185, 129, 0.5);
-      color: #34d399;
+      background: rgba(52, 199, 89, 0.18);
+      color: var(--success);
     }
 
-    .msg-content {
-      font-size: 14.5px;
-      line-height: 1.65;
-      color: #f8fafc;
-      white-space: pre-wrap;
-      word-break: break-word;
-      user-select: text;
-    }
-
-    /* Image Display in Message Card */
-    .msg-image-wrap {
-      margin-top: 4px;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    .btn-card-icon {
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      border-radius: 9999px;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s var(--ease-apple), color 0.15s var(--ease-apple), background-color 0.15s var(--ease-apple), transform 0.15s var(--ease-apple);
+      font-family: inherit;
+      opacity: 0.55;
+    }
+
+    @media (hover: none) {
+      .btn-card-icon {
+        opacity: 1;
+      }
+    }
+
+    .msg-card:hover .btn-card-icon {
+      opacity: 1;
+    }
+
+    .btn-card-icon:hover {
+      color: var(--text-main);
+      background: var(--fill-tertiary);
+      opacity: 1;
+    }
+
+    .btn-card-icon:active {
+      transform: scale(0.92);
+    }
+
+    .btn-card-icon.btn-single-delete:hover {
+      background: rgba(255, 59, 48, 0.15);
+      color: var(--danger);
+    }
+
+    /* Message Typography */
+    .msg-content {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      user-select: text;
+      display: -webkit-box;
+      -webkit-line-clamp: 8;
+      line-clamp: 8;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Image framing (macOS floating window thumbnail) */
+    .msg-image-wrap {
+      margin-top: 4px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--fill-quaternary);
+      border: none;
+      outline: 1px solid rgba(128, 128, 128, 0.15);
+      outline-offset: -1px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
       position: relative;
       cursor: zoom-in;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-      max-width: 100%;
+      transition: all 0.25s var(--ease-apple);
+      width: 100%;
+      max-height: 220px;
     }
 
     .msg-image-wrap:hover {
-      border-color: rgba(99, 102, 241, 0.5);
-      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+      outline-color: rgba(0, 122, 255, 0.4);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
     }
 
     .msg-image-img {
-      max-width: 100%;
-      max-height: 480px;
-      height: auto;
-      object-fit: contain;
+      width: 100%;
+      height: 220px;
+      max-height: 220px;
+      object-fit: cover;
+      object-position: top;
       display: block;
-      border-radius: var(--radius-md);
-      transition: transform 0.3s;
+      transition: transform 0.35s var(--ease-apple);
     }
 
     .msg-image-wrap:hover .msg-image-img {
-      transform: scale(1.015);
+      transform: scale(1.02);
     }
 
     .msg-image-badge {
       position: absolute;
       bottom: 8px;
       right: 8px;
-      padding: 4px 8px;
-      font-size: 11px;
-      border-radius: 6px;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(8px);
+      padding: 3px 9px;
+      font-size: 10.5px;
+      font-weight: 500;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
       border: 1px solid rgba(255, 255, 255, 0.18);
-      color: #e2e8f0;
+      color: #FFFFFF;
       pointer-events: none;
+      letter-spacing: 0.01em;
     }
 
+    /* URL Chip */
     .msg-url-chip {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      margin: 3px 2px;
-      padding: 2px 8px;
+      gap: 5px;
+      margin: 2px 0;
+      padding: 3px 10px;
       font-size: 12px;
-      color: #38bdf8;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 6px;
+      color: var(--accent);
+      background: rgba(0, 122, 255, 0.1);
+      border: none;
+      border-radius: 999px;
       text-decoration: none;
       vertical-align: middle;
-      transition: all 0.2s;
+      transition: all 0.15s var(--ease-apple);
+      max-width: min(100%, 420px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .msg-url-chip:hover {
-      background: rgba(56, 189, 248, 0.22);
-      border-color: rgba(56, 189, 248, 0.5);
-      color: #7dd3fc;
+      background: rgba(0, 122, 255, 0.18);
+      color: var(--accent);
     }
 
-    /* Floating Multi-select Action Bar */
+    /* ========= Floating Multi-select Action Bar ========= */
     .selection-bar {
       position: fixed;
       bottom: max(24px, env(safe-area-inset-bottom, 24px));
@@ -681,14 +1050,18 @@ export function renderHTML() {
       z-index: 150;
       width: calc(100% - 32px);
       max-width: 620px;
-      padding: 12px 18px;
-      border-radius: var(--radius-lg);
+      padding: 10px 16px;
+      border-radius: var(--radius-xl);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.15);
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset), 0 20px 40px rgba(0, 0, 0, 0.25);
+      transition: transform 0.32s var(--ease-apple);
     }
 
     .selection-bar.active {
@@ -696,27 +1069,27 @@ export function renderHTML() {
     }
 
     .selection-count {
-      font-size: 14px;
-      font-weight: 600;
-      color: #e2e8f0;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    /* Fullscreen Image Lightbox */
+    /* ========= Lightbox Modal ========= */
     .lightbox-overlay {
       position: fixed;
       inset: 0;
       z-index: 999;
-      background: rgba(7, 9, 14, 0.88);
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
+      background: rgba(10, 10, 12, 0.72);
+      backdrop-filter: blur(32px) saturate(180%);
+      -webkit-backdrop-filter: blur(32px) saturate(180%);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 24px;
-      animation: fadeIn 0.2s ease-out;
+      animation: fadeIn 0.25s ease-out;
     }
 
     .lightbox-overlay.active {
@@ -729,7 +1102,7 @@ export function renderHTML() {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
       position: relative;
     }
 
@@ -737,51 +1110,53 @@ export function renderHTML() {
       max-width: 100%;
       max-height: 80vh;
       object-fit: contain;
-      border-radius: var(--radius-md);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.14);
     }
 
     .lightbox-toolbar {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 8px 16px;
+      gap: 10px;
+      padding: 6px 14px;
       border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: var(--card-bg);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset);
     }
 
     .lightbox-close-btn {
       position: absolute;
-      top: -44px;
+      top: -42px;
       right: 0;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: var(--fill-tertiary);
+      border: 1px solid var(--card-border);
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: var(--text-main);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s var(--ease-apple);
     }
 
     .lightbox-close-btn:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: scale(1.05);
+      background: var(--fill-tertiary);
+      transform: scale(1.06);
     }
 
-    /* Modal Dialogs */
+    /* ========= Modal Dialogs ========= */
     .modal-overlay {
       position: fixed;
       inset: 0;
       z-index: 200;
-      background: rgba(7, 9, 14, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(10, 10, 12, 0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -795,68 +1170,79 @@ export function renderHTML() {
     .modal-card {
       width: 100%;
       max-width: 440px;
-      border-radius: var(--radius-lg);
-      padding: 24px;
+      border-radius: var(--radius-2xl);
+      padding: 22px 24px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
-      animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 16px;
+      animation: modalPop 0.28s var(--ease-apple);
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset), 0 24px 50px rgba(0, 0, 0, 0.3);
     }
 
     @keyframes modalPop {
-      from { transform: scale(0.92); opacity: 0; }
+      from { transform: scale(0.94); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
 
     .modal-title {
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 600;
       display: flex;
       align-items: center;
       gap: 8px;
+      color: var(--text-main);
     }
 
     .modal-desc {
       font-size: 13px;
       color: var(--text-muted);
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     .modal-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .time-option-btn {
-      padding: 12px 16px;
+      padding: 11px 14px;
       border-radius: var(--radius-md);
-      background: rgba(255, 255, 255, 0.04);
+      background: var(--fill-quaternary);
       border: 1px solid var(--card-border);
       color: var(--text-main);
-      font-size: 13.5px;
+      font-size: 13px;
+      font-family: inherit;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s var(--ease-apple);
+      text-align: left;
     }
 
     .time-option-btn:hover {
-      background: rgba(239, 68, 68, 0.15);
-      border-color: rgba(239, 68, 68, 0.4);
-      transform: translateX(3px);
+      background: var(--danger-bg);
+      border-color: var(--danger-border);
+      transform: translateX(2px);
     }
 
     .badge-danger {
       padding: 2px 8px;
-      font-size: 11px;
+      font-size: 10.5px;
       border-radius: 9999px;
-      background: rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+      white-space: nowrap;
     }
 
-    /* Auth Screen */
+    /* ========= Auth Screen ========= */
     .auth-overlay {
       position: fixed;
       inset: 0;
@@ -864,61 +1250,75 @@ export function renderHTML() {
       display: grid;
       place-items: center;
       padding: 20px;
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      background: rgba(7, 9, 14, 0.85);
+      backdrop-filter: blur(32px) saturate(180%);
+      -webkit-backdrop-filter: blur(32px) saturate(180%);
+      background: rgba(242, 242, 247, 0.6);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .auth-overlay {
+        background: rgba(16, 16, 18, 0.7);
+      }
     }
 
     .auth-card {
       width: 100%;
       max-width: 360px;
-      border-radius: var(--radius-lg);
-      padding: 36px 28px;
+      border-radius: var(--radius-3xl);
+      padding: 34px 28px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 20px;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+      gap: 18px;
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(var(--sat-amount));
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset), 0 30px 60px rgba(0, 0, 0, 0.22);
     }
 
     .auth-icon {
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
-      background: var(--accent-gradient);
+      width: 56px;
+      height: 56px;
+      border-radius: 22.5%;
+      background: linear-gradient(180deg, #4DA3FF 0%, #007AFF 55%, #0062CC 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 25px var(--accent-glow);
-      font-size: 26px;
+      color: #FFFFFF;
+      box-shadow: 0 8px 24px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     }
 
     .auth-input-group {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .auth-input {
       width: 100%;
-      padding: 13px 16px;
+      height: 44px;
+      padding: 0 16px;
       border-radius: var(--radius-md);
-      background: rgba(255, 255, 255, 0.06);
+      background: var(--card-bg-solid);
       border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset);
       color: var(--text-main);
       font-size: 15px;
+      font-family: var(--font);
       text-align: center;
       outline: none;
-      transition: all 0.2s;
+      transition: all 0.2s var(--ease-apple);
       letter-spacing: 2px;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .auth-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 16px var(--accent-glow);
-      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(0, 122, 255, 0.5);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.14), var(--glass-inset);
     }
 
     .shake {
@@ -932,121 +1332,225 @@ export function renderHTML() {
       40%, 60% { transform: translate3d(4px, 0, 0); }
     }
 
-    /* Toast Notification */
+    /* ========= macOS Dynamic HUD Toast ========= */
     .toast-container {
       position: fixed;
-      top: 24px;
+      top: 16px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       pointer-events: none;
     }
 
     .toast {
-      padding: 10px 18px;
+      padding: 8px 16px;
       border-radius: 9999px;
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 500;
-      color: #ffffff;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
-      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--card-bg);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-inset), 0 12px 28px rgba(0, 0, 0, 0.2);
+      animation: toastIn 0.3s var(--ease-apple);
       pointer-events: auto;
       max-width: 90vw;
+      white-space: nowrap;
     }
 
     @keyframes toastIn {
-      from { opacity: 0; transform: translateY(-16px) scale(0.9); }
+      from { opacity: 0; transform: translateY(-14px) scale(0.94); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .toast.hide {
       opacity: 0;
-      transform: translateY(-8px) scale(0.92);
-      transition: all 0.25s;
+      transform: translateY(-8px) scale(0.95);
+      transition: all 0.2s;
     }
 
-    /* Empty state */
+    /* ========= Empty state ========= */
     .empty-state {
-      padding: 60px 20px;
+      padding: 56px 20px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       color: var(--text-muted);
+      border-radius: var(--radius-2xl);
     }
 
     .empty-icon {
-      font-size: 40px;
-      opacity: 0.5;
+      width: 48px;
+      height: 48px;
+      color: var(--text-subtle);
+      opacity: 0.6;
+      margin-bottom: 4px;
     }
 
-    /* Responsive */
+    /* ========= Responsive Overrides (< 640px) ========= */
     @media (max-width: 640px) {
       .app-container {
-        padding: 12px 14px;
+        padding: 12px 14px 32px;
+        gap: 12px;
       }
       header {
         top: 8px;
-        padding: 12px 16px;
+        padding: 0 12px;
+        height: 54px;
+        border-radius: var(--radius-lg);
       }
       .brand-title h1 {
-        font-size: 15px;
-      }
-      .composer-card {
-        padding: 14px 16px;
-      }
-      .composer-input {
-        min-height: 76px;
         font-size: 14px;
       }
-      .composer-footer {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+      .brand-status {
+        font-size: 10.5px;
       }
-      .composer-info {
-        justify-content: space-between;
+      .btn-header-icon {
+        width: 32px;
+        height: 32px;
+      }
+      .composer-card {
+        padding: 14px;
+        border-radius: var(--radius-xl);
+      }
+      .composer-input {
+        min-height: 120px;
+        font-size: 15px;
+      }
+      .shortcut-hint {
+        display: none !important;
+      }
+      .composer-meta-row {
+        min-height: 12px;
+      }
+      .composer-footer {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: nowrap;
       }
       .composer-btns {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1.25fr;
-        gap: 6px;
-        width: 100%;
         margin-left: 0;
+        gap: 6px;
+        flex: 1;
+        flex-wrap: nowrap;
       }
       .composer-btns .btn {
-        padding: 8px 4px;
-        font-size: 12.5px;
-        white-space: nowrap;
+        height: 34px;
+        flex: 1;
+        padding: 0 8px;
+      }
+      .composer-btns #btnSend {
+        flex: 1.4;
       }
       .controls-bar {
-        flex-direction: column;
-        align-items: stretch;
+        gap: 8px;
       }
-      .search-box {
-        max-width: 100%;
+      .search-box, .search-input, .btn-select-mode {
+        height: 40px;
       }
-      .toolbar-actions {
-        justify-content: flex-end;
+      .search-input {
+        font-size: 13px;
+        padding-left: 38px;
+      }
+      .search-icon {
+        left: 13px;
+        width: 15px;
+        height: 15px;
+      }
+      .btn-select-mode {
+        padding: 0 12px;
+        font-size: 12px;
+      }
+      .msg-card {
+        padding: 14px;
+        border-radius: var(--radius-lg);
+      }
+      .msg-content {
+        font-size: 14px;
+        -webkit-line-clamp: 6;
+        line-clamp: 6;
+      }
+      .btn-card-action {
+        height: 26px;
+        padding: 0 8px;
+        font-size: 11.5px;
+      }
+      .btn-card-icon {
+        width: 26px;
+        height: 26px;
+      }
+      .msg-image-img {
+        height: 180px;
+        max-height: 180px;
+      }
+      .msg-image-wrap {
+        max-height: 180px;
+      }
+    }
+
+    /* ========= Mobile / Tablet (< 768px): symmetric layout, no overflow ========= */
+    @media (max-width: 767px) {
+      .app-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box !important;
+      }
+      header {
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      /* History list: single column stacked, symmetric */
+      .stream-feed {
+        display: flex !important;
+        flex-direction: column !important;
+        column-count: 1 !important;
+        gap: 12px !important;
+        width: 100% !important;
+      }
+      .stream-feed .msg-card {
+        margin-bottom: 0 !important;
+        width: 100% !important;
+      }
+      .workbench,
+      .composer-column,
+      .content-column,
+      .composer-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      /* Guard against any stray wide child blowing out the viewport */
+      .app-container,
+      .content-column,
+      .stream-feed,
+      .msg-card {
+        overflow-x: clip;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background Glowing Liquid Orbs -->
+  <!-- Ambient Vibrancy Background (Soft floating color clouds) -->
   <div class="ambient-background">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
+    <div class="ambient-cloud c1"></div>
+    <div class="ambient-cloud c2"></div>
+    <div class="ambient-cloud c3"></div>
   </div>
 
   <!-- Toast Container -->
@@ -1056,7 +1560,7 @@ export function renderHTML() {
   <div class="lightbox-overlay" id="imageLightbox">
     <div class="lightbox-container" id="lightboxContainer">
       <button class="lightbox-close-btn" id="btnCloseLightbox" title="关闭预览">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -1064,14 +1568,14 @@ export function renderHTML() {
       <img src="" alt="大图预览" class="lightbox-img" id="lightboxImg">
       <div class="lightbox-toolbar">
         <button class="btn btn-primary" id="btnLightboxCopy">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
           </svg>
           <span id="lightboxCopyText">复制图片到剪贴板</span>
         </button>
         <button class="btn" id="btnLightboxDownload">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
@@ -1082,58 +1586,69 @@ export function renderHTML() {
     </div>
   </div>
 
-  <!-- Auth Screen (Visible when not logged in) -->
+  <!-- Auth Screen (Visible when locked) -->
   <div class="auth-overlay" id="authScreen" style="display: none;">
-    <div class="auth-card glass">
-      <div class="auth-icon">💧</div>
+    <div class="auth-card">
+      <div class="auth-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
       <div>
-        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">CF-TextRelay</h2>
+        <h2 style="font-size: 19px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; letter-spacing: -0.02em;">CF-TextRelay</h2>
         <p style="font-size: 13px; color: var(--text-muted);">请输入专属访问密码解锁</p>
       </div>
       <div class="auth-input-group">
-        <input type="password" id="authInput" class="auth-input" placeholder="输入密码" autofocus autocomplete="current-password">
-        <button id="authBtn" class="btn btn-primary" style="padding: 12px; border-radius: var(--radius-md); font-size: 14px;">
+        <input type="password" id="authInput" class="auth-input" placeholder="访问密码" autofocus autocomplete="current-password">
+        <button id="authBtn" class="btn btn-primary" style="height: 40px; border-radius: var(--radius-md); font-size: 14px;">
           解锁进入
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Main App View -->
+  <!-- Main App View (Expanded Container) -->
   <div class="app-container" id="appMain" style="display: none;">
     <!-- Top Header -->
-    <header class="glass">
+    <header>
       <div class="brand">
-        <div class="brand-icon">💧</div>
+        <div class="brand-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <path d="m9 14 2 2 4-4"/>
+          </svg>
+        </div>
         <div class="brand-title">
           <h1>CF-TextRelay</h1>
           <div class="brand-status">
             <span class="status-dot" id="statusDot"></span>
             <span id="statusText">多端同步已就绪</span>
-            <span id="msgCountBadge" class="glass-pill" style="padding: 1px 7px; font-size: 10px; margin-left: 2px;">0 条</span>
+            <span id="msgCountBadge" class="badge-capsule">0 条</span>
           </div>
         </div>
       </div>
       <div class="header-actions">
-        <button class="btn btn-icon btn-accent" id="btnInstallApp" style="display: none;" title="安装为手机应用 / 添加到桌面">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="btn btn-header-icon btn-accent" id="btnInstallApp" style="display: none;" title="安装为手机应用 / 添加到桌面">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
             <rect x="5" y="2" width="14" height="20" rx="3"/>
             <path d="M12 18h.01"/>
           </svg>
         </button>
-        <button class="btn btn-icon" id="btnRefresh" title="立即刷新">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="btn btn-header-icon" id="btnRefresh" title="立即刷新">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
           </svg>
         </button>
-        <button class="btn btn-danger btn-icon" id="btnTimeDeleteModal" title="按时段清理">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="btn btn-header-icon" id="btnTimeDeleteModal" title="按时段清理">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <polyline points="12 6 12 12 16 14"/>
           </svg>
         </button>
-        <button class="btn btn-icon" id="btnLogout" title="退出锁定">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="btn btn-header-icon" id="btnLogout" title="退出锁定">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
@@ -1141,115 +1656,125 @@ export function renderHTML() {
       </div>
     </header>
 
-    <!-- Composer Section -->
-    <div class="composer-card glass">
-      <!-- Pending Image Preview Bar -->
-      <div id="pendingImageContainer" class="pending-image-container" style="display: none;">
-        <div class="pending-image-info">
-          <img id="pendingImageThumb" src="" alt="待发送图片" class="pending-image-thumb">
-          <div class="pending-image-meta">
-            <span id="pendingImageName" class="pending-image-name">image.png</span>
-            <span id="pendingImageSize" class="pending-image-size">0 KB</span>
+    <!-- Desktop Split-View Workbench -->
+    <div class="workbench">
+      <!-- Left Column: Quick Note Composer (Sticky on desktop) -->
+      <div class="composer-column">
+        <div class="composer-card">
+          <!-- Pending Attachment Bar -->
+          <div id="pendingImageContainer" class="pending-image-container" style="display: none;">
+            <div class="pending-image-info">
+              <img id="pendingImageThumb" src="" alt="待发送文件" class="pending-image-thumb">
+              <div class="pending-image-meta">
+                <span id="pendingImageName" class="pending-image-name">image.png</span>
+                <span id="pendingImageSize" class="pending-image-size">0 KB</span>
+              </div>
+            </div>
+            <button class="btn btn-card-icon btn-danger" id="btnRemovePendingImage" title="移除附件">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+
+          <textarea id="composerInput" class="composer-input" placeholder="输入或粘贴文本，支持复制/拖拽图片直接发送..."></textarea>
+
+          <!-- Compact meta row: char count + shortcut hint (above separator) -->
+          <div class="composer-meta-row">
+            <span id="charCount">0 字符</span>
+            <span class="shortcut-hint">
+              <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> 发送
+            </span>
+          </div>
+
+          <div class="composer-footer">
+            <div class="composer-btns">
+              <!-- Hidden File Inputs -->
+              <input type="file" id="fileUploadInput" accept="text/plain, text/*, .txt, .md, .log, .json, .csv, .js, .py, .html, .css, .sql, .xml, .yaml, .yml, application/json" style="display: none;">
+              <input type="file" id="imageUploadInput" accept="image/*" style="display: none;">
+
+              <!-- Upload Image Button -->
+              <button class="btn btn-accent" id="btnUploadImage" title="发送图片 (支持拍照或相册选取)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                图片
+              </button>
+
+              <!-- Upload TXT Button -->
+              <button class="btn" id="btnUploadTxt" title="上传 TXT / 文本文件">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                TXT
+              </button>
+
+              <!-- Paste Clipboard Button -->
+              <button class="btn" id="btnPasteClipboard" title="从剪贴板粘贴文本或图片">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                </svg>
+                粘贴
+              </button>
+
+              <!-- Send Button -->
+              <button class="btn btn-primary" id="btnSend">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+                发送
+              </button>
+            </div>
           </div>
         </div>
-        <button class="btn btn-icon btn-danger" id="btnRemovePendingImage" title="移除图片" style="width: 32px; height: 32px; padding: 4px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
       </div>
 
-      <textarea id="composerInput" class="composer-input" placeholder="输入或粘贴文本，支持复制/拖拽图片直接发送..."></textarea>
-      
-      <div class="composer-footer">
-        <div class="composer-info">
-          <span id="charCount">0 字符</span>
-          <span class="shortcut-hint">
-            <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> 发送
-          </span>
+      <!-- Right Column: Spotlight Search + Bento History Grid -->
+      <div class="content-column">
+        <!-- Controls Bar: Spotlight Search & Select Mode Aligned -->
+        <div class="controls-bar">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="搜索文本或输入 [图片]...">
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn btn-select-mode" id="btnToggleSelectMode">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+              <span id="selectModeText">多选模式</span>
+            </button>
+          </div>
         </div>
-        <div class="composer-btns">
-          <!-- Hidden File Inputs -->
-          <input type="file" id="fileUploadInput" accept="text/plain, text/*, .txt, .md, .log, .json, .csv, .js, .py, .html, .css, .sql, .xml, .yaml, .yml, application/json" style="display: none;">
-          <input type="file" id="imageUploadInput" accept="image/*" style="display: none;">
 
-          <!-- Upload Image (Photo / Album) Button -->
-          <button class="btn btn-accent" id="btnUploadImage" title="发送图片 (支持拍照或相册选取)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <polyline points="21 15 16 10 5 21"/>
-            </svg>
-            图片
-          </button>
-
-          <!-- Upload TXT Button -->
-          <button class="btn" id="btnUploadTxt" title="上传 TXT / 文本文件">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-            TXT
-          </button>
-
-          <!-- Paste Clipboard Button -->
-          <button class="btn" id="btnPasteClipboard" title="从剪贴板粘贴文本或图片">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
-            </svg>
-            粘贴
-          </button>
-
-          <!-- Send Button -->
-          <button class="btn btn-primary" id="btnSend">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="22" y1="2" x2="11" y2="13"/>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-            发送
-          </button>
+        <!-- Stream Message Bento Grid -->
+        <div class="stream-feed" id="streamFeed">
+          <!-- Cards rendered via JS -->
         </div>
       </div>
-    </div>
-
-    <!-- Controls Bar -->
-    <div class="controls-bar">
-      <div class="search-box">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" id="searchInput" class="search-input" placeholder="搜索文本或输入 [图片]...">
-      </div>
-      <div class="toolbar-actions">
-        <button class="btn" id="btnToggleSelectMode">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <path d="m9 12 2 2 4-4"/>
-          </svg>
-          <span id="selectModeText">多选模式</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Stream Message List -->
-    <div class="stream-feed" id="streamFeed">
-      <!-- Cards rendered via JS -->
     </div>
   </div>
 
   <!-- Floating Selection Bar (Batch Actions) -->
-  <div class="selection-bar glass" id="selectionBar">
+  <div class="selection-bar" id="selectionBar">
     <div class="selection-count">
       <input type="checkbox" id="selectAllCheckbox" class="msg-checkbox">
       <span id="selectedCountText">已选 0 项</span>
     </div>
     <div style="display: flex; gap: 8px;">
       <button class="btn" id="btnBatchExportTxt" title="导出选中信息为 TXT 文件">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>
           <line x1="12" y1="15" x2="12" y2="3"/>
@@ -1258,7 +1783,7 @@ export function renderHTML() {
       </button>
       <button class="btn" id="btnCancelSelection">取消</button>
       <button class="btn btn-danger" id="btnBatchDelete">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
           <polyline points="3 6 5 6 21 6"/>
           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
         </svg>
@@ -1269,13 +1794,16 @@ export function renderHTML() {
 
   <!-- Time-based Deletion Modal -->
   <div class="modal-overlay" id="timeDeleteModal">
-    <div class="modal-card glass">
+    <div class="modal-card">
       <div class="modal-title">
-        <span style="color: #ef4444;">⏱️</span>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.75">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
         按时段批量清理
       </div>
       <p class="modal-desc">
-        选择要删除的时间范围。此操作将同时永久清理指定时段内的文本及 R2 图片，请谨慎操作。
+        选择要删除的时间范围。此操作将同时永久清理指定时段内的文本及 R2 文件/图片，请谨慎操作。
       </p>
 
       <div class="modal-options-list">
@@ -1295,9 +1823,9 @@ export function renderHTML() {
           <span>删除最近 <strong>1 年</strong> 内的信息</span>
           <span class="badge-danger">1 Year</span>
         </button>
-        <button class="time-option-btn" data-range="all" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
-          <span style="color: #f87171; font-weight: 600;">清空全部记录与文件 (一键重置)</span>
-          <span class="badge-danger" style="background: rgba(239, 68, 68, 0.35);">CLEAR ALL</span>
+        <button class="time-option-btn" data-range="all" style="border-color: var(--danger-border); background: var(--danger-bg);">
+          <span style="color: var(--danger); font-weight: 600;">清空全部记录与文件 (一键重置)</span>
+          <span class="badge-danger">CLEAR ALL</span>
         </button>
       </div>
 
@@ -1317,7 +1845,7 @@ export function renderHTML() {
       searchQuery: '',
       pollingInterval: null,
       isSubmitting: false,
-      pendingImage: null, // File object for image upload
+      pendingAttachment: null,
       currentLightboxImage: null
     };
 
@@ -1368,18 +1896,22 @@ export function renderHTML() {
     const btnLightboxDownload = document.getElementById('btnLightboxDownload');
     const lightboxCopyText = document.getElementById('lightboxCopyText');
 
-    // Toast helper
+    // Toast helper with Linear-style Monochromatic SVG Icons (Zero Emoji)
     function showToast(text, type = 'info') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
-      toast.className = 'toast glass';
+      toast.className = 'toast';
       
-      let icon = '💧';
-      if (type === 'success') icon = '✅';
-      if (type === 'error') icon = '⚠️';
-      if (type === 'delete') icon = '🗑️';
+      let iconSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+      if (type === 'success') {
+        iconSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+      } else if (type === 'error') {
+        iconSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FF453A" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+      } else if (type === 'delete') {
+        iconSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FF453A" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+      }
 
-      toast.innerHTML = \`<span>\${icon}</span><span>\${text}</span>\`;
+      toast.innerHTML = \`<span style="display:flex;align-items:center;">\${iconSvg}</span><span>\${escapeHtml(text)}</span>\`;
       container.appendChild(toast);
 
       setTimeout(() => {
@@ -1420,11 +1952,11 @@ export function renderHTML() {
         showToast('已载入图片，可输入说明或直接点击发送', 'info');
       } else {
         // Document / Code / Text File
-        pendingImageThumb.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="%2338bdf8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+        pendingImageThumb.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="%2338bdf8" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
         pendingImageThumb.style.display = 'block';
         showToast(\`已载入原文件 \${file.name}，发送后支持原文件名下载\`, 'info');
 
-        // 文本格式文件自动读取预览到输入框中
+        // Text format files auto read preview to input box
         const isTextLike = (file.type && file.type.startsWith('text/')) || /\\.(txt|md|json|js|ts|py|html|css|sql|log|csv|xml|yaml|yml)$/i.test(file.name);
         if (isTextLike && file.size <= 2 * 1024 * 1024) {
           const reader = new FileReader();
@@ -1478,7 +2010,7 @@ export function renderHTML() {
               if (imageType) {
                 const blob = await item.getType(imageType);
                 const file = new File([blob], \`clipboard-\${Date.now()}.png\`, { type: imageType });
-                setPendingImage(file);
+                setPendingAttachment(file);
                 showToast('已从剪贴板读取到图片', 'success');
                 return;
               }
@@ -1582,13 +2114,11 @@ export function renderHTML() {
 
         const pngPromise = fetchImageAsPngBlob(imageUrl);
 
-        // Safari (iOS & macOS) & Modern Chromium: Passing Promise directly keeps user gesture alive
         let writePromise;
         try {
           const item = new ClipboardItem({ 'image/png': pngPromise });
           writePromise = navigator.clipboard.write([item]);
         } catch (itemErr) {
-          // Fallback for older Chromium engines requiring resolved Blob in constructor
           const resolvedBlob = await pngPromise;
           const item = new ClipboardItem({ 'image/png': resolvedBlob });
           writePromise = navigator.clipboard.write([item]);
@@ -1617,7 +2147,7 @@ export function renderHTML() {
         return;
       }
       if (file.type && file.type.startsWith('image/')) {
-        setPendingImage(file);
+        setPendingAttachment(file);
         return;
       }
       const reader = new FileReader();
@@ -1828,9 +2358,11 @@ export function renderHTML() {
 
     function shakeAuthCard() {
       const card = document.querySelector('.auth-card');
-      card.classList.remove('shake');
-      void card.offsetWidth;
-      card.classList.add('shake');
+      if (card) {
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+      }
     }
 
     function logout() {
@@ -1850,8 +2382,8 @@ export function renderHTML() {
     // Fetch Messages
     async function fetchMessages(silent = false) {
       if (!silent) {
-        statusDot.style.background = '#6366f1';
-        statusDot.style.boxShadow = '0 0 8px #6366f1';
+        statusDot.style.background = '#0A84FF';
+        statusDot.style.boxShadow = '0 0 8px #0A84FF';
         statusText.textContent = '正在同步...';
       }
 
@@ -1860,12 +2392,12 @@ export function renderHTML() {
         STATE.messages = data.messages || [];
         renderFeed();
         msgCountBadge.textContent = \`\${STATE.messages.length} 条\`;
-        statusDot.style.background = '#10b981';
-        statusDot.style.boxShadow = '0 0 8px #10b981';
+        statusDot.style.background = '#34C759';
+        statusDot.style.boxShadow = '0 0 8px #34C759';
         statusText.textContent = '多端同步已就绪';
       } catch (err) {
-        statusDot.style.background = '#ef4444';
-        statusDot.style.boxShadow = '0 0 8px #ef4444';
+        statusDot.style.background = '#FF3B30';
+        statusDot.style.boxShadow = '0 0 8px #FF3B30';
         statusText.textContent = '同步中断';
         if (!silent) showToast(err.message, 'error');
       }
@@ -1918,7 +2450,6 @@ export function renderHTML() {
 
       try {
         if (hasAttachment) {
-          // Send FormData with file
           const formData = new FormData();
           formData.append('file', STATE.pendingAttachment);
           if (content) {
@@ -1929,7 +2460,6 @@ export function renderHTML() {
           showToast(isImg ? '图片已同步流转' : ('原文件 ' + STATE.pendingAttachment.name + ' 已同步流转'), 'success');
           clearPendingAttachment();
         } else {
-          // Send plain text
           await apiRequest('/api/messages', 'POST', { content });
           showToast('已同步发送至流转流', 'success');
         }
@@ -1984,7 +2514,7 @@ export function renderHTML() {
         .replace(/'/g, '&#039;');
     }
 
-    // Auto-detect and render URL Chips
+    // Auto-detect and render URL Chips (Truncated single-line)
     function escapeAndLinkify(text) {
       if (!text) return '';
       const escaped = escapeHtml(text);
@@ -1998,12 +2528,12 @@ export function renderHTML() {
           cleanUrl = cleanUrl.slice(0, -1);
         }
         return \`<a href="\${cleanUrl}" target="_blank" rel="noopener noreferrer" class="msg-url-chip">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" style="flex-shrink:0;">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
             <polyline points="15 3 21 3 21 9"/>
             <line x1="10" y1="14" x2="21" y2="3"/>
           </svg>
-          \${cleanUrl.length > 36 ? cleanUrl.slice(0, 36) + '...' : cleanUrl}
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">\${cleanUrl.length > 36 ? cleanUrl.slice(0, 36) + '...' : cleanUrl}</span>
         </a>\${suffix}\`;
       });
     }
@@ -2019,7 +2549,7 @@ export function renderHTML() {
       return '';
     }
 
-    // Render Stream Feed
+    // Render Stream Feed (Zero Emoji, Clean Monochromatic SVGs)
     function renderFeed() {
       let filtered = STATE.messages;
       if (STATE.searchQuery) {
@@ -2035,10 +2565,13 @@ export function renderHTML() {
 
       if (filtered.length === 0) {
         streamFeed.innerHTML = \`
-          <div class="empty-state glass" style="border-radius: var(--radius-lg);">
-            <div class="empty-icon">📭</div>
-            <div style="font-size: 15px; font-weight: 600; color: #cbd5e1;">暂无流转记录</div>
-            <p style="font-size: 13px;">在上方输入文本或直接粘贴/发送图片，将在手机与电脑端实时同步</p>
+          <div class="empty-state glass">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M22 12h-6l-2 3h-4l-2-3H2"/>
+              <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+            </svg>
+            <div style="font-size: 15px; font-weight: 600; color: var(--text-main);">暂无流转记录</div>
+            <p style="font-size: 13px; color: var(--text-muted);">在上方输入文本或直接粘贴/发送图片，将在手机与电脑端实时同步</p>
           </div>
         \`;
         return;
@@ -2051,74 +2584,87 @@ export function renderHTML() {
         const imageUrl = isImage ? getMessageImageUrl(msg) : '';
         const fileUrl = isFile && msg.file_key ? ('/api/files/' + encodeURIComponent(msg.file_key) + '?token=' + encodeURIComponent(STATE.token) + '&download=' + encodeURIComponent(msg.file_name || 'download')) : '';
 
-        let tagText = \`\${(msg.content || '').length} 字\`;
+        let tagHtml = \`<span>\${(msg.content || '').length} 字</span>\`;
         if (isImage) {
-          tagText = \`🖼️ 图片 \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\`;
+          tagHtml = \`
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <span>图片</span>
+          \`;
         } else if (isFile) {
-          tagText = \`📄 \${escapeHtml(msg.file_name) || '原文件'} \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}\`;
+          tagHtml = \`
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span>\${escapeHtml(msg.file_name) || '原文件'} \${msg.file_size ? '· ' + formatBytes(msg.file_size) : ''}</span>
+          \`;
         }
         const fileName = msg.file_name || (isImage ? 'image.png' : 'file.txt');
         const safeFileName = escapeHtml(fileName);
 
         return \`
-          <div class="msg-card glass \${isSelected ? 'selected' : ''}" data-id="\${msg.id}">
+          <div class="msg-card \${isSelected ? 'selected' : ''}" data-id="\${msg.id}">
             <div class="msg-header">
               <div class="msg-meta">
                 \${STATE.selectMode ? \`
                   <input type="checkbox" class="msg-checkbox item-select-cb" data-id="\${msg.id}" \${isSelected ? 'checked' : ''}>
                 \` : ''}
                 <span class="msg-time" title="\${new Date(msg.created_at).toLocaleString()}">\${formatTime(msg.created_at)}</span>
-                <span class="msg-tag \${isImage ? 'image-tag' : (isFile ? 'file-tag' : '')}">\${tagText}</span>
+                <span class="msg-tag \${isImage ? 'image-tag' : (isFile ? 'file-tag' : '')}">\${tagHtml}</span>
               </div>
               <div class="msg-actions">
                 \${isImage ? \`
-                  <button class="btn btn-copy-card btn-copy-image-card" data-img="\${encodeURIComponent(imageUrl)}" title="复制图片到系统剪贴板 (Win: Ctrl+V / Mac: ⌘+V / 微信/QQ等直接粘贴)">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <button class="btn-card-action btn-copy-card btn-copy-image-card" data-img="\${encodeURIComponent(imageUrl)}" title="复制图片到系统剪贴板 (Win: Ctrl+V / Mac: ⌘+V / 微信等直接粘贴)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                     </svg>
-                    <span>复制图片</span>
+                    <span>复制</span>
                   </button>
-                  <button class="btn btn-icon btn-download-image-card" data-img="\${encodeURIComponent(imageUrl)}" data-name="\${encodeURIComponent(fileName)}" style="width: 28px; height: 28px; padding: 5px;" title="下载原图">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <button class="btn-card-icon btn-download-image-card" data-img="\${encodeURIComponent(imageUrl)}" data-name="\${encodeURIComponent(fileName)}" title="下载原图">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/>
                       <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
                   </button>
                 \` : (isFile ? \`
-                  <button class="btn btn-copy-card btn-copy-text-card" data-copy="\${encodeURIComponent(msg.content || '')}" title="复制文本内容">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <button class="btn-card-action btn-copy-card btn-copy-text-card" data-copy="\${encodeURIComponent(msg.content || '')}" title="复制文本内容">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                     </svg>
                     <span>复制</span>
                   </button>
-                  <button class="btn btn-icon btn-download-file-card" data-url="\${encodeURIComponent(fileUrl)}" data-name="\${encodeURIComponent(fileName)}" style="width: 28px; height: 28px; padding: 5px;" title="下载原始文件 (\${fileName})">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <button class="btn-card-icon btn-download-file-card" data-url="\${encodeURIComponent(fileUrl)}" data-name="\${encodeURIComponent(fileName)}" title="下载原始文件 (\${safeFileName})">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/>
                       <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
                   </button>
                 \` : \`
-                  <button class="btn btn-copy-card btn-copy-text-card" data-copy="\${encodeURIComponent(msg.content)}">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <button class="btn-card-action btn-copy-card btn-copy-text-card" data-copy="\${encodeURIComponent(msg.content)}">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                     </svg>
                     <span>复制</span>
                   </button>
-                  <button class="btn btn-icon btn-download-text-card" data-content="\${encodeURIComponent(msg.content)}" data-time="\${msg.created_at}" style="width: 28px; height: 28px; padding: 5px;" title="保存为 .txt">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <button class="btn-card-icon btn-download-text-card" data-content="\${encodeURIComponent(msg.content)}" data-time="\${msg.created_at}" title="保存为 .txt">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/>
                       <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
                   </button>
                 \`)}
-                <button class="btn btn-danger btn-icon btn-single-delete" data-id="\${msg.id}" style="width: 28px; height: 28px; padding: 5px;" title="删除这条记录">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="btn-card-icon btn-single-delete" data-id="\${msg.id}" title="删除此条记录">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                   </svg>
@@ -2176,10 +2722,10 @@ export function renderHTML() {
           const ok = await copyImageToClipboard(imgUrl);
           if (ok) {
             btn.classList.add('copied');
-            span.textContent = '已复制图片!';
+            span.textContent = '已复制';
             setTimeout(() => {
               btn.classList.remove('copied');
-              span.textContent = '复制图片';
+              span.textContent = '复制';
             }, 2000);
           }
         });
@@ -2206,7 +2752,7 @@ export function renderHTML() {
         });
       });
 
-      // Download single raw document / code file (MD, TXT, JSON, etc.)
+      // Download single raw document / code file
       document.querySelectorAll('.btn-download-file-card').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -2418,7 +2964,7 @@ export function renderHTML() {
         if (range === '1d') promptText = '确认删除【最近 1 天 (24h)】内的所有记录与图片吗？';
         if (range === '1w') promptText = '确认删除【最近 1 周 (7天)】内的所有记录与图片吗？';
         if (range === '1y') promptText = '确认删除【最近 1 年】内的所有记录与图片吗？';
-        if (range === 'all') promptText = '⚠️ 极其危险警告：确认清空全部所有历史记录与存储文件吗？此操作无法撤销！';
+        if (range === 'all') promptText = '【高危操作警告】确认清空全部所有历史记录与存储文件吗？此操作无法撤销！';
 
         if (!confirm(promptText)) return;
 
@@ -2473,7 +3019,7 @@ export function renderHTML() {
 
     window.addEventListener('appinstalled', () => {
       if (btnInstallApp) btnInstallApp.style.display = 'none';
-      showToast('🎉 CF-TextRelay 已安装为独立应用', 'success');
+      showToast('CF-TextRelay 已安装为独立应用', 'success');
     });
 
     // Start App
